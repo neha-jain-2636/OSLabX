@@ -106,7 +106,7 @@ function generateRandom() {
 
 function clearQueue() {
   document.getElementById('reqQueue').value = '';
-  document.getElementById('reqQueue').placeholder = 'X, XX, XXX';
+  document.getElementById('reqQueue').placeholder = 'e.g. 82, 170, 43, 140, 24';
 }
 
 function addRequest() {
