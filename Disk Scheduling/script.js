@@ -12,7 +12,7 @@ const ALGO_DESC = {
   FCFS:     'Serves requests in the order they arrive. Simple but may cause high seek distances.',
   SSTF:     'Selects the closest request to current head. Reduces seek time but may starve far requests.',
   RDS:      'Picks requests in a random order. No optimization — used as a performance baseline.',
-  PDS:      'Serves requests by user-assigned priority (1 = highest). Low-priority requests may starve.',
+  PDS:      'Serves requests by user-assigned priority. Low-priority requests may starve.',
   SCAN:     'Moves head in one direction servicing all requests, then reverses direction like an elevator.',
   'C-SCAN': 'Moves in one direction, jumps back to start after reaching end. Provides uniform wait times.',
   LOOK:     'Like SCAN but only travels as far as the last request in each direction — no wasted movement.',
