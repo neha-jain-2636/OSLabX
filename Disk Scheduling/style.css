@@ -6,6 +6,17 @@
        .hidden, .divider, .output-table, or any :root vars.
    ============================================================ */
 
+/* ── Rotating CD Icon ────────────────────────────────────────── */
+@keyframes spin-cd {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.module-icon-spin {
+  display: inline-block;
+  animation: spin-cd 3s linear infinite;
+}
+
 /* ── Module-specific tokens (disk states only) ──────────────── */
 :root {
   --disk-pending: #6b7280;
