@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="OS Mini Project — Page Replacement Algorithms: FIFO, LRU, Optimal, MFU with Belady's Anomaly detection." />
+  <link rel="stylesheet" href="../global.css" />
+  <link rel="stylesheet" href="style.css" />
+  <title>Page Replacement Algorithms</title>
+</head>
+<body>
+<div class="module-wrapper">
+
+  <div class="module-header">
+    <div class="module-icon">📄</div>
+    <div class="module-title">
+      <h1>Page Replacement Algorithms</h1>
+      <p class="text-muted">Simulate FIFO (+ Belady's Anomaly), LRU, Optimal, and MFU page replacement policies with step-by-step frame visualization.</p>
+    </div>
+  </div>
+
+  <div class="card" id="input-card">
+    <h3>Simulation Setup</h3>
+    <hr class="divider" />
+
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <div class="input-group" style="flex:2;min-width:220px;">
+        <label for="ref-string">Page Reference String</label>
+        <input
+          type="text"
+          id="ref-string"
+          class="input-field"
+          placeholder="e.g. 7 0 1 2 0 3 0 4 2 3 0 3 2 1 2 0 1 7 0 1"
+          value="7 0 1 2 0 3 0 4 2 3 0 3 2 1 2 0 1 7 0 1"
+        />
+      </div>
+      <div class="input-group" style="flex:1;min-width:140px;">
+        <label for="frame-count">Number of Frames</label>
+        <input type="number" id="frame-count" class="input-field" value="3" min="1" max="10" />
+      </div>
+    </div>
+
+    <div class="algo-tabs" id="algo-tabs">
+      <button class="algo-tab active" id="tab-fifo"    onclick="switchAlgo('fifo',    this)">⏩ FIFO</button>
+      <button class="algo-tab"        id="tab-belady"  onclick="switchAlgo('belady',  this)">⚡ Belady's Anomaly</button>
+      <button class="algo-tab"        id="tab-lru"     onclick="switchAlgo('lru',     this)">🕐 LRU</button>
+      <button class="algo-tab"        id="tab-optimal" onclick="switchAlgo('optimal', this)">🎯 Optimal</button>
+      <button class="algo-tab"        id="tab-mfu"     onclick="switchAlgo('mfu',     this)">📊 MFU</button>
+    </div>
+
+    <p id="algo-desc" class="algo-hint">
+      FIFO replaces the page that has been in memory the longest. Simple but may not reflect actual usage patterns.
+    </p>
+
+    <div id="belady-controls" class="belady-panel hidden">
+      <div class="input-group">
+        <label for="belady-max-frames">Max Frames to Test (Belady's checks frames 1 → N)</label>
+        <input type="number" id="belady-max-frames" class="input-field" value="7" min="2" max="15" />
+      </div>
+      <p class="text-muted" style="font-size:0.82rem;">Belady's Anomaly: FIFO may produce <em>more</em> page faults with more frames. This scans a range and highlights any such inversions.</p>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary"   id="run-btn"   onclick="runSimulation()">▶ Run Simulation</button>
+      <button class="btn btn-secondary" id="reset-btn" onclick="resetAll()">↺ Reset</button>
+    </div>
+
+    <div id="error-msg" class="alert alert-error hidden" style="margin-top:12px;"></div>
+  </div>
+
+  <div id="stats-section" class="hidden">
+    <div class="stats-row" id="stats-row"></div>
+  </div>
+
+  <div id="visual-output">
+    <div class="output-placeholder">
+      <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      <p>Configure your reference string and frames above, then click <strong>Run Simulation</strong>.</p>
+    </div>
+  </div>
+
+</div>
+<script src="script.js"></script>
+</body>
+</html>
