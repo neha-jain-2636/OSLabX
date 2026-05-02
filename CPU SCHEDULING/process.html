@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="process_scheduler.css">
+  <title>CPU Scheduling Visualizer</title>
+</head>
+
+<body>
+  <div class="container">
+
+    <a href="process_scheduler.html" class="nav-back">
+      ← Algorithm Theory
+    </a>
+
+    <h1>🖥 CPU Scheduling Visualizer</h1>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Add Process</h2>
+        <div class="form-group">
+          <label for="process-name">Process Name</label>
+          <input type="text" id="process-name" placeholder="e.g., P5">
+        </div>
+        <div class="form-group">
+          <label for="arrival-time">Arrival Time</label>
+          <input type="number" id="arrival-time" min="0" value="0">
+        </div>
+        <div class="form-group">
+          <label for="burst-time">Burst Time</label>
+          <input type="number" id="burst-time" min="1" value="1">
+        </div>
+        <div class="form-group">
+          <label for="priority">Priority (lower = higher priority)</label>
+          <input type="number" id="priority" min="1" value="1">
+        </div>
+        <button id="add-process-btn">+ Add Process</button>
+      </div>
+
+      <div class="card">
+        <h2>Scheduling Settings</h2>
+        <div class="form-group">
+          <label for="algorithm">Algorithm</label>
+          <select id="algorithm">
+            <option value="fcfs">First Come First Served (FCFS)</option>
+            <option value="sjf">Shortest Job First (SJF)</option>
+            <option value="ljf">Longest Job First (LJF)</option>
+            <option value="priority">Priority Scheduling</option>
+            <option value="rr">Round Robin (RR)</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="preemptive-container">
+          <label for="preemptive">Execution Mode</label>
+          <select id="preemptive">
+            <option value="false">Non-Preemptive</option>
+            <option value="true">Preemptive</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="time-quantum-container" style="display: none;">
+          <label for="time-quantum">Time Quantum</label>
+          <input type="number" id="time-quantum" min="1" value="2">
+        </div>
+
+        <div class="form-group">
+          <label for="speed">Simulation Speed</label>
+          <input type="range" id="speed" min="100" max="2000" step="100" value="1000">
+          <div class="range-value" id="speed-value">1000 ms</div>
+        </div>
+
+        <div class="button-group">
+          <button id="start-btn" class="button-green">▶ Start</button>
+          <button id="stop-btn" class="button-red" disabled>■ Stop</button>
+          <button id="reset-btn" class="button-gray">↺ Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Processes</h2>
+      <div style="overflow-x: auto;">
+        <table id="processes-table">
+          <thead>
+            <tr>
+              <th>Process</th>
+              <th>Arrival</th>
+              <th>Burst</th>
+              <th>Priority</th>
+              <th>Remaining</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="processes-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Gantt Chart &nbsp;
+        <span style="font-size:11px; font-family:var(--font-mono); color:var(--text-muted); font-weight:400; text-transform:none; letter-spacing:0;">
+          T = <span id="current-time" style="color:var(--accent-cyan);">0</span>
+        </span>
+      </h2>
+      <div class="gantt-container">
+        <div id="gantt-chart" class="gantt-chart"></div>
+        <div id="current-process-info"></div>
+        <div id="queue-display"></div>
+      </div>
+    </div>
+
+    <div class="card" id="output-card" style="display: none;">
+      <h2>Results</h2>
+      <div style="overflow-x: auto;">
+        <table id="output-table">
+          <thead>
+            <tr>
+              <th>Process</th>
+              <th>Completion</th>
+              <th>Turnaround</th>
+              <th>Waiting</th>
+            </tr>
+          </thead>
+          <tbody id="output-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="process_scheduler.js"></script>
+</body>
+</html>

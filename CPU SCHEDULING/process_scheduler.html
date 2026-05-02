@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CPU Scheduling Algorithms — Theory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base:     #0a0c10;
+      --bg-surface:  #111318;
+      --bg-card:     #161920;
+      --bg-elevated: #1c2029;
+      --border:      #252a35;
+      --border-bright: #2e3548;
+      --accent-cyan:   #00e5ff;
+      --accent-violet: #9b6dff;
+      --accent-green:  #00ffaa;
+      --accent-amber:  #ffbe0b;
+      --accent-red:    #ff3d6b;
+      --text-primary:  #e8eaf0;
+      --text-secondary:#8b95a8;
+      --text-muted:    #4a5568;
+      --font-display:  'Space Grotesk', sans-serif;
+      --font-mono:     'JetBrains Mono', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-display);
+      background-color: var(--bg-base);
+      background-image:
+        radial-gradient(ellipse at 15% 40%, rgba(0,229,255,0.04) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 15%, rgba(155,109,255,0.05) 0%, transparent 55%);
+      color: var(--text-primary);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-base); }
+    ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
+
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(135deg, #0d1117 0%, #13171f 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 48px 24px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(0,229,255,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .header h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-violet) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+    }
+    .header p {
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+
+    /* ── Container ── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+    }
+
+    /* ── Tabs ── */
+    .tabs-wrapper {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-base);
+      padding: 16px 0 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+    .tabs {
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+
+    .tab {
+      padding: 12px 22px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: all 0.25s;
+      user-select: none;
+    }
+    .tab:hover { color: var(--text-secondary); }
+    .tab.active {
+      color: var(--accent-cyan);
+      border-bottom-color: var(--accent-cyan);
+    }
+
+    .nav-btn {
+      margin-left: auto;
+      padding: 8px 18px;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #000;
+      background: linear-gradient(135deg, var(--accent-cyan), #0097b2);
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      align-self: center;
+      white-space: nowrap;
+    }
+    .nav-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(0,229,255,0.35);
+    }
+
+    /* ── Algo content ── */
+    .algo-content {
+      display: none;
+      animation: fadeUp 0.35s ease;
+    }
+    .algo-content.active { display: block; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Section block ── */
+    .section-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .section-block::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+      opacity: 0.3;
+    }
+
+    .algo-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .algo-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
+      color: #000;
+      flex-shrink: 0;
+      font-family: var(--font-mono);
+    }
+    .algo-title-text h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+    .algo-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    h3 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-cyan);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    h3::before {
+      content: '';
+      display: block;
+      width: 16px;
+      height: 1px;
+      background: var(--accent-cyan);
+    }
+
+    p { color: var(--text-secondary); font-size: 14px; margin-bottom: 10px; }
+
+    ul { padding-left: 0; list-style: none; }
+    ul li {
+      color: var(--text-secondary);
+      font-size: 14px;
+      padding: 6px 0 6px 20px;
+      position: relative;
+      border-bottom: 1px solid var(--border);
+    }
+    ul li:last-child { border-bottom: none; }
+    ul li::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      color: var(--accent-cyan);
+      font-weight: 700;
+    }
+    ul li strong { color: var(--text-primary); font-weight: 600; }
+
+    /* ── Process table ── */
+    .process-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 13px;
+    }
+    .process-table th {
+      padding: 10px 14px;
+      text-align: center;
+      background: var(--bg-elevated);
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    .process-table td {
+      padding: 10px 14px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      border-bottom: 1px solid var(--border);
+    }
+    .process-table tr:last-child td { border-bottom: none; }
+    .process-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+    /* ── Gantt blocks ── */
+    .gantt-wrapper {
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 16px 40px;
+      margin: 14px 0;
+      overflow-x: auto;
+    }
+    .gantt-lbl {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .gantt-row {
+      display: flex;
+      min-height: 60px;
+      position: relative;
+    }
+    .gantt-block {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+      color: #000;
+      position: relative;
+      min-width: 48px;
+      border-right: 1px solid rgba(0,0,0,0.25);
+    }
+    .gantt-block:last-child { border-right: none; }
+    .gantt-t {
+      position: absolute;
+      bottom: -22px;
+      font-size: 10px;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+    }
+
+    /* Gantt colours */
+    .gc1 { background: #00e5ff; }
+    .gc2 { background: #00ffaa; }
+    .gc3 { background: #9b6dff; }
+    .gc4 { background: #ffbe0b; }
+    .gc5 { background: #ff3d6b; }
+
+    /* ── Results ── */
+    .result-block {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 18px;
+      margin-top: 14px;
+    }
+    .result-block p { margin: 0; font-size: 13px; }
+    .result-block ul li { font-size: 13px; font-family: var(--font-mono); }
+
+    /* ── Pro/Con ── */
+    .pro-con {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    @media (max-width: 600px) { .pro-con { grid-template-columns: 1fr; } }
+    .pros, .cons {
+      padding: 18px;
+      border-radius: 8px;
+    }
+    .pros {
+      background: rgba(0, 255, 170, 0.05);
+      border: 1px solid rgba(0, 255, 170, 0.2);
+    }
+    .cons {
+      background: rgba(255, 61, 107, 0.05);
+      border: 1px solid rgba(255, 61, 107, 0.2);
+    }
+    .pros h4 { color: var(--accent-green); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px; }
+    .cons h4 { color: var(--accent-red);   font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px; }
+    .pros ul li::before { color: var(--accent-green); }
+    .cons ul li::before { color: var(--accent-red); }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      padding: 40px 0 0;
+    }
+    .footer-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #000;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    .footer-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,229,255,0.25); }
+
+    code {
+      background: var(--bg-elevated);
+      color: var(--accent-amber);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      border: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>CPU Scheduling Algorithms</h1>
+    <p>Theory, examples, and visual walkthroughs for every major algorithm</p>
+  </div>
+
+  <div class="container">
+    <div class="tabs-wrapper">
+      <div class="tabs" style="align-items:center;">
+        <div class="tab active" onclick="showAlgo('fcfs')">FCFS</div>
+        <div class="tab" onclick="showAlgo('sjf')">SJF</div>
+        <div class="tab" onclick="showAlgo('ljf')">LJF</div>
+        <div class="tab" onclick="showAlgo('priority')">Priority</div>
+        <div class="tab" onclick="showAlgo('rr')">Round Robin</div>
+        <a href="process.html" class="nav-btn">▶ Visualizer</a>
+      </div>
+    </div>
+
+    <!-- ── FCFS ── -->
+    <div id="fcfs" class="algo-content active">
+      <div class="section-block">
+        <div class="algo-header">
+          <div class="algo-badge">1</div>
+          <div class="algo-title-text">
+            <h2>First Come First Served</h2>
+            <div class="algo-subtitle">FCFS · Non-Preemptive · FIFO Queue</div>
+          </div>
+        </div>
+
+        <h3>Theory</h3>
+        <p>The simplest scheduling algorithm. Processes are executed strictly in the order they arrive in the ready queue.</p>
+        <ul>
+          <li>Processes queue up and are served in arrival order — <strong>FIFO</strong></li>
+          <li><strong>Non-preemptive</strong>: once started, a process runs until completion</li>
+          <li>Simple to implement using a basic queue data structure</li>
+          <li>Can suffer from the <strong>"convoy effect"</strong> — short jobs stuck behind long ones</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <h3>Example</h3>
+        <table class="process-table">
+          <thead><tr><th>Process</th><th>Arrival</th><th>Burst</th></tr></thead>
+          <tbody>
+            <tr><td>P1</td><td>0</td><td>4</td></tr>
+            <tr><td>P2</td><td>1</td><td>3</td></tr>
+            <tr><td>P3</td><td>2</td><td>1</td></tr>
+          </tbody>
+        </table>
+
+        <div class="gantt-wrapper">
+          <div class="gantt-lbl">Gantt Chart</div>
+          <div class="gantt-row">
+            <div class="gantt-block gc1" style="flex:4;">P1
+              <span class="gantt-t" style="left:0;">0</span>
+              <span class="gantt-t" style="right:0;">4</span>
+            </div>
+            <div class="gantt-block gc2" style="flex:3;">P2
+              <span class="gantt-t" style="right:0;">7</span>
+            </div>
+            <div class="gantt-block gc3" style="flex:1;">P3
+              <span class="gantt-t" style="right:0;">8</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-block">
+          <ul>
+            <li>Waiting Time: P1 = 0, P2 = 3, P3 = 5</li>
+            <li>Avg Waiting Time: (0 + 3 + 5) / 3 = <strong>2.67 units</strong></li>
+            <li>Turnaround: P1 = 4, P2 = 6, P3 = 6</li>
+            <li>Avg Turnaround: (4 + 6 + 6) / 3 = <strong>5.33 units</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="pro-con">
+          <div class="pros"><h4>✓ Advantages</h4><ul>
+            <li>Simple to understand and implement</li>
+            <li>No starvation — every process eventually runs</li>
+            <li>Fair in FIFO environments</li>
+            <li>Good for batch processing workloads</li>
+          </ul></div>
+          <div class="cons"><h4>✗ Disadvantages</h4><ul>
+            <li>High average waiting time</li>
+            <li>Not suitable for interactive systems</li>
+            <li>Convoy effect hurts overall throughput</li>
+            <li>No priority or urgency consideration</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SJF ── -->
+    <div id="sjf" class="algo-content">
+      <div class="section-block">
+        <div class="algo-header">
+          <div class="algo-badge">2</div>
+          <div class="algo-title-text">
+            <h2>Shortest Job First</h2>
+            <div class="algo-subtitle">SJF · Preemptive (SRTF) or Non-Preemptive</div>
+          </div>
+        </div>
+
+        <h3>Theory</h3>
+        <p>Selects the process with the smallest CPU burst time. Provably optimal for minimising average waiting time.</p>
+        <ul>
+          <li><strong>Non-preemptive:</strong> current process runs to completion before scheduler picks again</li>
+          <li><strong>Preemptive (SRTF):</strong> if a new process with shorter remaining time arrives, it preempts</li>
+          <li>Optimal for minimising <strong>average waiting time</strong></li>
+          <li>Main challenge: accurately predicting burst time in advance</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <h3>Example (Non-Preemptive)</h3>
+        <table class="process-table">
+          <thead><tr><th>Process</th><th>Arrival</th><th>Burst</th></tr></thead>
+          <tbody>
+            <tr><td>P1</td><td>0</td><td>6</td></tr>
+            <tr><td>P2</td><td>1</td><td>2</td></tr>
+            <tr><td>P3</td><td>2</td><td>8</td></tr>
+            <tr><td>P4</td><td>3</td><td>3</td></tr>
+          </tbody>
+        </table>
+
+        <div class="gantt-wrapper">
+          <div class="gantt-lbl">Gantt Chart</div>
+          <div class="gantt-row">
+            <div class="gantt-block gc1" style="flex:6;">P1
+              <span class="gantt-t" style="left:0;">0</span>
+              <span class="gantt-t" style="right:0;">6</span>
+            </div>
+            <div class="gantt-block gc2" style="flex:2;">P2
+              <span class="gantt-t" style="right:0;">8</span>
+            </div>
+            <div class="gantt-block gc4" style="flex:3;">P4
+              <span class="gantt-t" style="right:0;">11</span>
+            </div>
+            <div class="gantt-block gc3" style="flex:8;">P3
+              <span class="gantt-t" style="right:0;">19</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-block">
+          <ul>
+            <li>Waiting Time: P1 = 0, P2 = 5, P3 = 11, P4 = 5</li>
+            <li>Avg Waiting Time: (0 + 5 + 11 + 5) / 4 = <strong>5.25 units</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="pro-con">
+          <div class="pros"><h4>✓ Advantages</h4><ul>
+            <li>Optimal average waiting time</li>
+            <li>Better throughput than FCFS</li>
+            <li>Short jobs don't wait behind long ones</li>
+            <li>Good for systems with known job lengths</li>
+          </ul></div>
+          <div class="cons"><h4>✗ Disadvantages</h4><ul>
+            <li>May cause <strong>starvation</strong> for long processes</li>
+            <li>Burst time prediction is difficult in practice</li>
+            <li>Not easily implementable in interactive systems</li>
+            <li>Overhead tracking remaining time (preemptive)</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── LJF ── -->
+    <div id="ljf" class="algo-content">
+      <div class="section-block">
+        <div class="algo-header">
+          <div class="algo-badge" style="background:linear-gradient(135deg,#ff3d6b,#9b6dff);">L</div>
+          <div class="algo-title-text">
+            <h2>Longest Job First</h2>
+            <div class="algo-subtitle">LJF · Preemptive (LRTF) or Non-Preemptive</div>
+          </div>
+        </div>
+
+        <h3>Theory</h3>
+        <p>The inverse of SJF — LJF always selects the process with the <strong>largest remaining burst time</strong>. It prioritises longer jobs, ensuring heavyweight processes are not starved at the expense of short tasks.</p>
+        <ul>
+          <li><strong>Non-preemptive:</strong> once chosen, a process runs to completion before the scheduler re-evaluates</li>
+          <li><strong>Preemptive (LRTF):</strong> if a newly arrived process has a longer burst time than the current one, it preempts</li>
+          <li>Results in <strong>higher average waiting time</strong> compared to SJF or FCFS in most scenarios</li>
+          <li>Useful when long jobs carry higher priority (e.g. bulk data processing pipelines)</li>
+          <li>Short processes may experience <strong>starvation</strong> if long jobs keep arriving</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <h3>Example (Non-Preemptive LJF)</h3>
+        <table class="process-table">
+          <thead><tr><th>Process</th><th>Arrival</th><th>Burst</th></tr></thead>
+          <tbody>
+            <tr><td>P1</td><td>0</td><td>3</td></tr>
+            <tr><td>P2</td><td>1</td><td>7</td></tr>
+            <tr><td>P3</td><td>2</td><td>5</td></tr>
+            <tr><td>P4</td><td>3</td><td>1</td></tr>
+          </tbody>
+        </table>
+
+        <div class="gantt-wrapper">
+          <div class="gantt-lbl">Gantt Chart — execution order: P1 → P2 → P3 → P4</div>
+          <div class="gantt-row">
+            <div class="gantt-block gc1" style="flex:3;">P1
+              <span class="gantt-t" style="left:0;">0</span>
+              <span class="gantt-t" style="right:0;">3</span>
+            </div>
+            <div class="gantt-block gc2" style="flex:7;">P2
+              <span class="gantt-t" style="right:0;">10</span>
+            </div>
+            <div class="gantt-block gc3" style="flex:5;">P3
+              <span class="gantt-t" style="right:0;">15</span>
+            </div>
+            <div class="gantt-block gc4" style="flex:1;">P4
+              <span class="gantt-t" style="right:0;">16</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-block">
+          <ul>
+            <li>Completion: P1 = 3, P2 = 10, P3 = 15, P4 = 16</li>
+            <li>Turnaround: P1 = 3, P2 = 9, P3 = 13, P4 = 13</li>
+            <li>Waiting Time: P1 = 0, P2 = 2, P3 = 8, P4 = 12</li>
+            <li>Avg Waiting Time: (0 + 2 + 8 + 12) / 4 = <strong>5.5 units</strong></li>
+            <li>Avg Turnaround Time: (3 + 9 + 13 + 13) / 4 = <strong>9.5 units</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <h3>LJF vs SJF at a glance</h3>
+        <table class="process-table">
+          <thead><tr><th>Metric</th><th>SJF</th><th>LJF</th></tr></thead>
+          <tbody>
+            <tr><td>Avg Waiting Time</td><td>Minimised</td><td>Generally higher</td></tr>
+            <tr><td>Starvation risk</td><td>Long jobs</td><td>Short jobs</td></tr>
+            <tr><td>Throughput</td><td>High</td><td>Lower</td></tr>
+            <tr><td>Best suited for</td><td>Interactive / latency-sensitive</td><td>Batch / throughput-focused</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section-block">
+        <div class="pro-con">
+          <div class="pros"><h4>✓ Advantages</h4><ul>
+            <li>Long / compute-heavy jobs are not starved</li>
+            <li>Maximises CPU utilisation for heavyweight tasks</li>
+            <li>Simple to implement (mirror of SJF)</li>
+            <li>Useful in batch processing & HPC workloads</li>
+          </ul></div>
+          <div class="cons"><h4>✗ Disadvantages</h4><ul>
+            <li>Short processes can face severe <strong>starvation</strong></li>
+            <li>Higher average waiting and turnaround times</li>
+            <li>Not suitable for interactive or real-time systems</li>
+            <li>Burst-time prediction still required for preemptive mode</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Priority ── -->
+    <div id="priority" class="algo-content">
+      <div class="section-block">
+        <div class="algo-header">
+          <div class="algo-badge">3</div>
+          <div class="algo-title-text">
+            <h2>Priority Scheduling</h2>
+            <div class="algo-subtitle">Priority · Preemptive or Non-Preemptive</div>
+          </div>
+        </div>
+
+        <h3>Theory</h3>
+        <p>Each process is assigned a priority value. The CPU is allocated to the highest-priority ready process.</p>
+        <ul>
+          <li>Lower numerical value = higher priority (by convention)</li>
+          <li>Can be <strong>preemptive</strong> or <strong>non-preemptive</strong></li>
+          <li>Priority can be derived from memory requirements, deadlines, or user-defined rules</li>
+          <li><strong>Aging</strong> can be used to gradually raise the priority of waiting processes, preventing starvation</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <h3>Example (Non-Preemptive Priority)</h3>
+        <table class="process-table">
+          <thead><tr><th>Process</th><th>Arrival</th><th>Burst</th><th>Priority</th></tr></thead>
+          <tbody>
+            <tr><td>P1</td><td>0</td><td>5</td><td>2</td></tr>
+            <tr><td>P2</td><td>1</td><td>3</td><td>1</td></tr>
+            <tr><td>P3</td><td>2</td><td>8</td><td>3</td></tr>
+          </tbody>
+        </table>
+
+        <div class="gantt-wrapper">
+          <div class="gantt-lbl">Gantt Chart</div>
+          <div class="gantt-row">
+            <div class="gantt-block gc1" style="flex:5;">P1
+              <span class="gantt-t" style="left:0;">0</span>
+              <span class="gantt-t" style="right:0;">5</span>
+            </div>
+            <div class="gantt-block gc2" style="flex:3;">P2
+              <span class="gantt-t" style="right:0;">8</span>
+            </div>
+            <div class="gantt-block gc3" style="flex:8;">P3
+              <span class="gantt-t" style="right:0;">16</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-block">
+          <ul>
+            <li>Waiting Time: P1 = 0, P2 = 4, P3 = 8</li>
+            <li>Avg Waiting Time: (0 + 4 + 8) / 3 = <strong>4.0 units</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="pro-con">
+          <div class="pros"><h4>✓ Advantages</h4><ul>
+            <li>Flexible — priority can encode business rules</li>
+            <li>Important processes run first</li>
+            <li>Good fit for real-time systems with deadlines</li>
+            <li>Composable with other algorithms</li>
+          </ul></div>
+          <div class="cons"><h4>✗ Disadvantages</h4><ul>
+            <li>Low-priority processes can starve indefinitely</li>
+            <li>Priority inversion problem in shared resources</li>
+            <li>Requires aging mechanism to be practical</li>
+            <li>Priority assignment can be subjective</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Round Robin ── -->
+    <div id="rr" class="algo-content">
+      <div class="section-block">
+        <div class="algo-header">
+          <div class="algo-badge">4</div>
+          <div class="algo-title-text">
+            <h2>Round Robin</h2>
+            <div class="algo-subtitle">RR · Always Preemptive · Time Quantum</div>
+          </div>
+        </div>
+
+        <h3>Theory</h3>
+        <p>Designed for time-sharing systems — each process gets the CPU for a fixed time slice called the <code>time quantum</code>.</p>
+        <ul>
+          <li>Each process gets CPU for at most <strong>q time units</strong> per turn</li>
+          <li>Always <strong>preemptive</strong> — processes exceeding their quantum are preempted</li>
+          <li>Ready queue is treated as a <strong>circular buffer</strong></li>
+          <li>Too small a quantum → excessive context switching; too large → degenerates to FCFS</li>
+          <li>No starvation — every process gets a turn</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <h3>Example (Time Quantum = 2)</h3>
+        <table class="process-table">
+          <thead><tr><th>Process</th><th>Arrival</th><th>Burst</th></tr></thead>
+          <tbody>
+            <tr><td>P1</td><td>0</td><td>5</td></tr>
+            <tr><td>P2</td><td>1</td><td>3</td></tr>
+            <tr><td>P3</td><td>2</td><td>1</td></tr>
+          </tbody>
+        </table>
+
+        <div class="gantt-wrapper">
+          <div class="gantt-lbl">Gantt Chart (q = 2)</div>
+          <div class="gantt-row">
+            <div class="gantt-block gc1" style="flex:2;">P1
+              <span class="gantt-t" style="left:0;">0</span>
+              <span class="gantt-t" style="right:0;">2</span>
+            </div>
+            <div class="gantt-block gc2" style="flex:2;">P2
+              <span class="gantt-t" style="right:0;">4</span>
+            </div>
+            <div class="gantt-block gc3" style="flex:1;">P3
+              <span class="gantt-t" style="right:0;">5</span>
+            </div>
+            <div class="gantt-block gc1" style="flex:2;">P1
+              <span class="gantt-t" style="right:0;">7</span>
+            </div>
+            <div class="gantt-block gc2" style="flex:1;">P2
+              <span class="gantt-t" style="right:0;">8</span>
+            </div>
+            <div class="gantt-block gc1" style="flex:1;">P1
+              <span class="gantt-t" style="right:0;">9</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-block">
+          <ul>
+            <li>Waiting Time: P1 = 4, P2 = 4, P3 = 2</li>
+            <li>Avg Waiting Time: (4 + 4 + 2) / 3 = <strong>3.33 units</strong></li>
+            <li>Turnaround: P1 = 9, P2 = 7, P3 = 3</li>
+            <li>Avg Turnaround: (9 + 7 + 3) / 3 = <strong>6.33 units</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="pro-con">
+          <div class="pros"><h4>✓ Advantages</h4><ul>
+            <li>Fair CPU allocation across all processes</li>
+            <li>No starvation by design</li>
+            <li>Good response time for short processes</li>
+            <li>Ideal for time-sharing and interactive systems</li>
+          </ul></div>
+          <div class="cons"><h4>✗ Disadvantages</h4><ul>
+            <li>Higher average waiting time than SJF</li>
+            <li>Performance heavily depends on quantum selection</li>
+            <li>Context switching overhead with small quantum</li>
+            <li>Ignores process priority or urgency</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <a href="process.html" class="footer-btn">▶ Open Visualizer</a>
+    </div>
+  </div>
+
+  <script>
+    function showAlgo(id) {
+      document.querySelectorAll('.algo-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      const tab = Array.from(document.querySelectorAll('.tab'))
+        .find(t => t.textContent.trim().toLowerCase().replace(' ', '') === id
+               || (id === 'ljf' && t.textContent.trim() === 'LJF')
+               || (id === 'rr'  && t.textContent.trim() === 'Round Robin')
+               || (id === 'fcfs' && t.textContent.trim() === 'FCFS')
+               || (id === 'sjf'  && t.textContent.trim() === 'SJF')
+               || (id === 'priority' && t.textContent.trim() === 'Priority'));
+      if (tab) tab.classList.add('active');
+    }
+  </script>
+</body>
+</html>
