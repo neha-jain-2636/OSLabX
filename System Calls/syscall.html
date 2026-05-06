@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSLabX | System Calls Visualization</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="osx-nav">
+        <a href="../index.html" class="osx-nav-back">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            Back to OSLabX
+        </a>
+        <a href="../index.html" class="osx-brand">
+            <span class="osx-brand-dot"></span> OSLabX
+        </a>
+    </div>
+    <header class="header">
+        <h1>System Calls Visualization</h1>
+        <p>Interactive demonstration of core Kernel-Space interfaces</p>
+    </header>
+
+    <div class="modules-container">
+        <!-- Process Management Module -->
+        <section class="module-card">
+            <h2>Process Management</h2>
+            <nav class="nav-group">
+                <button class="nav-btn active" data-call="fork">Fork()</button>
+                <button class="nav-btn" data-call="exec">Exec()</button>
+                <button class="nav-btn" data-call="wait">Wait()</button>
+                <button class="nav-btn" data-call="exit">Exit()</button>
+            </nav>
+
+            <div class="info-panel" id="syscall-info">
+                <!-- Content injected by JS -->
+            </div>
+
+            <div class="visualization-panel">
+                <!-- FORK DEMO -->
+                <div id="fork-demo" class="demo active">
+                    <div class="process-tree"></div>
+                </div>
+
+                <!-- EXEC DEMO -->
+                <div id="exec-demo" class="demo">
+                    <div class="process-list"></div>
+                    <div class="command-selector hidden" style="margin-top:10px;">
+                        <select class="command-select">
+                            <option value="ls">ls</option>
+                            <option value="ps">ps</option>
+                            <option value="date">date</option>
+                        </select>
+                        <button class="btn-action execute-btn">Execute</button>
+                    </div>
+                    <div class="terminal" style="margin-top:15px;">
+                        <div class="output hidden"></div>
+                    </div>
+                </div>
+
+                <!-- WAIT DEMO -->
+                <div id="wait-demo" class="demo">
+                    <div class="process-list"></div>
+                    <div class="status" style="margin:10px 0; color:var(--accent);">Select a parent to wait...</div>
+                    <div class="progress-container" style="background:#000; height:10px; border-radius:5px;">
+                        <div class="progress-bar"
+                            style="width:0%; height:100%; background:var(--accent); transition:0.3s;"></div>
+                    </div>
+                </div>
+
+                <!-- EXIT DEMO -->
+                <div id="exit-demo" class="demo">
+                    <div class="process-list"></div>
+                    <div class="exit-controls" style="margin-top:15px;">
+                        <h4 class="process-header">No Process Selected</h4>
+                        <p class="process-status">Ready</p>
+                        <button class="btn-action exit-btn" disabled>Call exit()</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- File Operations Module -->
+        <section class="module-card">
+            <h2>File Operations</h2>
+            <nav class="nav-group">
+                <button class="file-nav-btn active" data-op="open">Open()</button>
+                <button class="file-nav-btn" data-op="write">Write()</button>
+                <button class="file-nav-btn" data-op="read">Read()</button>
+                <button class="file-nav-btn" data-op="files">FD Table</button>
+            </nav>
+
+            <div class="info-panel" id="file-info">
+                <!-- Content injected by JS -->
+            </div>
+
+            <div class="visualization-panel">
+                <div id="open-demo" class="file-demo active">
+                    <input type="text" class="filename-input" placeholder="Enter filename (e.g., test.txt)">
+                    <button class="btn-action open-file-btn">Open File</button>
+                    <div class="open-status" style="margin-top:10px; font-size:0.8rem;"></div>
+                </div>
+
+                <div id="write-demo" class="file-demo">
+                    <select class="fd-select"></select>
+                    <textarea class="write-content" placeholder="Data to write..."></textarea>
+                    <button class="btn-action write-file-btn">Write to Kernel</button>
+                    <div class="write-status" style="margin-top:10px; font-size:0.8rem;"></div>
+                </div>
+
+                <div id="read-demo" class="file-demo">
+                    <select class="fd-select"></select>
+                    <button class="btn-action read-file-btn">Read from Kernel</button>
+                    <div class="read-status" style="margin-top:10px; font-size:0.8rem;"></div>
+                    <pre class="read-output" style="margin-top:10px; border:1px solid var(--border-color);"></pre>
+                </div>
+
+                <div id="files-demo" class="file-demo">
+                    <div class="open-files-list"></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

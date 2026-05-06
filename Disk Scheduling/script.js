@@ -159,30 +159,21 @@ function openPopup(algo) {
   const info = ALGO_INFO[algo];
   document.getElementById('popupTitle').textContent = algo;
   document.getElementById('popupBody').innerHTML = `
-    <div class="ds-popup-section">
-      <div class="ds-popup-section-title">Description</div>
-      <p class="ds-popup-text">${info.description}</p>
+    <div class="ds-popup-panel">
+      <div class="ds-popup-panel-title">Description</div>
+      <p>${info.description}</p>
     </div>
-
-    <div class="ds-popup-section">
-      <div class="ds-popup-section-title">Key Points</div>
-      <div class="ds-popup-grid-2">
-        <ul>${info.keyPoints.slice(0, Math.ceil(info.keyPoints.length / 2)).map(k => `<li>${k}</li>`).join('')}</ul>
-        <ul>${info.keyPoints.slice(Math.ceil(info.keyPoints.length / 2)).map(k => `<li>${k}</li>`).join('')}</ul>
-      </div>
+    <div class="ds-popup-panel">
+      <div class="ds-popup-panel-title">Key Points</div>
+      <ul>${info.keyPoints.map(k => `<li>${k}</li>`).join('')}</ul>
     </div>
-
-    <div class="ds-popup-section">
-      <div class="ds-popup-grid-2">
-        <div>
-          <div class="ds-popup-section-title">Advantages</div>
-          <ul>${info.advantages.map(k => `<li>${k}</li>`).join('')}</ul>
-        </div>
-        <div>
-          <div class="ds-popup-section-title">Disadvantages</div>
-          <ul>${info.disadvantages.map(k => `<li>${k}</li>`).join('')}</ul>
-        </div>
-      </div>
+    <div class="ds-popup-panel">
+      <div class="ds-popup-panel-title">Advantages</div>
+      <ul>${info.advantages.map(k => `<li>${k}</li>`).join('')}</ul>
+    </div>
+    <div class="ds-popup-panel">
+      <div class="ds-popup-panel-title">Disadvantages</div>
+      <ul>${info.disadvantages.map(k => `<li>${k}</li>`).join('')}</ul>
     </div>
   `;
   document.getElementById('popupOverlay').classList.remove('hidden');

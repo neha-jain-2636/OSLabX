@@ -1,28 +1,20 @@
 /* Disk Scheduling — module overrides on top of global.css */
 
-:root {
-  --disk-current: #7c9cff;
-  --disk-done: #4ade80;
-  --disk-pending: #5e6781;
-  --bg-card-alt: #161a24;
-}
-
 .module-wrapper { position: relative; z-index: 2; }
 
+/* Header tweak */
 .ds-header-content { gap: 18px; }
 .module-icon-spin { animation-duration: 18s; }
 
-/* Canvas */
+/* Canvas wrap */
 .ds-canvas-wrap {
   background: var(--bg-elev-2);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 18px;
   margin-top: 12px;
-  margin-bottom: 28px;
   overflow-x: auto;
 }
-
 #seekCanvas, .ds-canvas {
   display: block;
   width: 100%;
@@ -30,7 +22,6 @@
   background: var(--bg);
   border-radius: 8px;
   border: 1px solid var(--border);
-  color: var(--text-primary);
 }
 
 .ds-track-ruler {
@@ -53,33 +44,11 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
 }
-
-.ds-legend-item { 
-  display: inline-flex; 
-  align-items: center; 
-  gap: 8px; 
-  font-size: 0.82rem; 
-  color: var(--text-secondary); 
-}
-
-.ds-legend-dot { 
-  width: 12px; 
-  height: 12px; 
-  border-radius: 4px; 
-  background: var(--text-muted); 
-}
-
-.ds-legend-dot.current { 
-  background: var(--accent); 
-  box-shadow: 0 0 8px var(--accent); 
-}
-
+.ds-legend-item { display: inline-flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--text-secondary); }
+.ds-legend-dot { width: 12px; height: 12px; border-radius: 4px; background: var(--text-muted); }
+.ds-legend-dot.current { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
 .ds-legend-dot.done { background: var(--success); }
-
-.ds-legend-dot.pending { 
-  background: var(--text-muted); 
-  border: 1px dashed var(--border-strong); 
-}
+.ds-legend-dot.pending { background: var(--text-muted); border: 1px dashed var(--border-strong); }
 
 /* Request badges */
 .ds-req-badges {
@@ -88,7 +57,6 @@
   flex-wrap: wrap;
   margin-top: 10px;
 }
-
 .ds-req-badge {
   font-family: var(--font-mono);
   font-size: 0.78rem;
@@ -99,24 +67,16 @@
   background: var(--bg-elev-2);
   color: var(--text-secondary);
 }
-
 .ds-req-badge.pending { color: var(--text-muted); }
-
 .ds-req-badge.current {
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   color: #0b0d12;
   border-color: transparent;
 }
-
-.ds-req-badge.done { 
-  background: var(--success-light); 
-  color: var(--success); 
-  border-color: rgba(74,222,128,0.3); 
-}
+.ds-req-badge.done { background: var(--success-light); color: var(--success); border-color: rgba(74,222,128,0.3); }
 
 /* Sim section */
 .ds-sim-section { margin-top: 16px; }
-
 .ds-sim-heading {
   font-family: var(--font-display);
   font-size: 0.95rem;
@@ -124,13 +84,7 @@
   color: var(--text-primary);
   margin-bottom: 8px;
 }
-
-.ds-sim-label { 
-  font-size: 0.78rem; 
-  color: var(--text-muted); 
-  text-transform: uppercase; 
-  letter-spacing: 0.08em; 
-}
+.ds-sim-label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
 
 /* Stat boxes */
 .stat-box {
@@ -140,8 +94,8 @@
   background: linear-gradient(180deg, var(--bg-elev-1), var(--bg-elev-2));
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
+  text-align: left;
 }
-
 .stat-label {
   font-size: 0.7rem;
   letter-spacing: 0.08em;
@@ -149,7 +103,6 @@
   color: var(--text-muted);
   margin-bottom: 4px;
 }
-
 .stat-value {
   font-family: var(--font-mono);
   font-size: 1.3rem;
@@ -157,192 +110,32 @@
   color: var(--accent);
 }
 
-/* Layout rows */
-.ds-bottom-row { 
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-}
+/* Bottom row */
+.ds-bottom-row { gap: 16px; }
 
-.ds-action-btns {
-  display: flex;
-  gap: 10px;
-  flex: 1;
-}
-
-/* Queue button row */
-.ds-queue-btn-row {
-  display: flex;
-  width: 100%;
-  gap: 8px;
-}
-
-.ds-queue-btn-row .ds-sm-btn {
-  flex: 1;
-  min-width: 0;
-}
-
-/* Buttons */
-.ds-run-btn, .ds-reset-btn { 
-  flex: 1;
-  min-width: 0;
-}
-
-.ds-run-btn { 
-  padding: 12px 22px; 
-  font-size: 0.9rem;
-}
-
-.ds-reset-btn { 
-  padding: 12px 18px;
-  transition: var(--transition);
-}
-
-.ds-reset-btn:hover {
-  background: var(--error) !important;
-  color: #0b0d12 !important;
-  border-color: var(--error) !important;
-}
-
+/* Run / reset specific */
+.ds-run-btn { padding: 12px 22px; font-size: 0.9rem; }
+.ds-reset-btn { padding: 12px 18px; }
 .ds-sm-btn { padding: 6px 12px; font-size: 0.78rem; }
 
 /* Speed slider */
 .ds-speed-group { padding: 10px 0 6px; }
 
-/* Direction group */
-#directionGroup { margin-top: 12px; }
-
-/* Priority group */
-#priorityGroup { margin-top: 12px; }
-
-/* Footer */
+/* Footer link spacing */
 .ds-footer-link { margin: 0 4px; }
 
-.ds-github-link {
-  display: inline-flex;
-  align-items: center;
-  vertical-align: middle;
-  gap: 6px;
-  line-height: 1;
-}
-
-.ds-github-link svg { 
-  flex-shrink: 0;
-  display: block;
-}
-
-/* Popup header */
-.ds-popup-header { border-bottom: none; }
-
-.ds-popup-header + .divider { margin: 14px 0; }
-
-.ds-popup-body { padding: 16px 22px !important; }
-
+/* Step highlight */
 .step-highlight {
   background: var(--accent-dim) !important;
   outline: 1px solid var(--accent);
 }
 
-/* Popup sections */
-.ds-popup-section {
-  margin-bottom: 24px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid var(--border);
-}
-
-.ds-popup-section:first-child { margin-top: 0; }
-
-.ds-popup-section:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
-
-.ds-popup-section-title {
+/* Popup panel */
+.ds-popup-panel { padding: 14px 0; }
+.ds-popup-panel-title {
   font-family: var(--font-display);
   font-weight: 600;
   color: var(--text-primary);
-  font-size: 0.95rem;
-  margin-bottom: 12px;
-}
-
-.ds-popup-text {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  line-height: 1.6;
-}
-
-/* Grid for 2 columns */
-.ds-popup-grid-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px;
-}
-
-.ds-popup-section ul {
-  list-style: none;
-  padding-left: 0;
-}
-
-.ds-popup-section ul li {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  margin-bottom: 8px;
-  padding-left: 20px;
-  position: relative;
-}
-
-.ds-popup-section ul li::before {
-  content: '•';
-  position: absolute;
-  left: 0;
-  color: var(--accent);
-  font-weight: bold;
-}
-
-/* Simulation output */
-#visual-output { margin-bottom: 40px !important; }
-
-/* Overview grid */
-.ds-algo-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-  margin-top: 12px;
-}
-
-/* Algo cards */
-.ds-algo-card {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.ds-algo-card .ds-algo-summary {
-  flex-grow: 1;
-  margin-bottom: 20px;
-}
-
-.ds-algo-card .ds-readmore-btn {
-  margin-top: auto;
-  background: var(--bg-elev-2);
-  border: 1px solid var(--border-md);
-  color: var(--text-primary);
-  transition: var(--transition);
-}
-
-.ds-algo-card .ds-readmore-btn:hover {
-  background: var(--accent);
-  color: #0b0d12;
-  border-color: var(--accent);
-}
-
-/* Responsive */
-@media (max-width: 1200px) {
-  .ds-algo-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 768px) {
-  .ds-algo-grid { grid-template-columns: 1fr; }
+  margin-bottom: 6px;
+  font-size: 0.92rem;
 }

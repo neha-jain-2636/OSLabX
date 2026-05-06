@@ -1,0 +1,359 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding System Calls</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #e1e1e1;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #1a1d29;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #333;
+        }
+        h1 {
+            color: #ffffff;
+            font-size: 2.5rem;
+        }
+        h2 {
+            color: #4d9fff;
+            margin-top: 30px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+        h3 {
+            color: #4d9fff;
+        }
+        .syscall-category {
+            background-color: #21263a;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        .syscall-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .syscall-table th, .syscall-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+        .syscall-table th {
+            background-color: #2c3250;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        .syscall-table tr:hover {
+            background-color: #2a304a;
+        }
+        .explore-btn {
+            display: block;
+            width: 250px;
+            margin: 50px auto;
+            padding: 15px 25px;
+            background-color: #4d9fff;
+            color: white;
+            text-align: center;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .explore-btn:hover {
+            background-color: #3a7fd9;
+        }
+        code {
+            background-color: #2c3250;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+            color: #ff9d4d;
+        }
+        .note {
+            background-color: #2c3250;
+            border-left: 4px solid #4d9fff;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        p {
+            color: #c5c5c5;
+        }
+        li {
+            color: #c5c5c5;
+        }
+        .osx-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 14px 0 22px;
+            margin-bottom: 6px;
+        }
+        .osx-nav-back {
+display: inline-flex;
+align-items: center;
+gap: 8px;
+padding: 8px 14px;
+border: 1px solid var(--border-md);
+border-radius: 999px;
+font-size: 0.78rem;
+font-weight: 600;
+letter-spacing: 0.04em;
+color: var(--text-secondary);
+background: var(--bg-elev-1);
+transition: var(--transition);
+}
+.osx-nav-back:hover {
+color: var(--accent);
+border-color: var(--accent);
+background: var(--accent-dim);
+transform: translateX(-2px);
+}
+    </style>
+</head>
+<body>
+    <div class="osx-nav">
+        <a href="../index.html" class="osx-nav-back">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            Back to OSLabX
+        </a>
+        <a href="../index.html" class="osx-brand">
+            <span class="osx-brand-dot"></span> OSLabX
+        </a>
+    </div>
+    <header>
+        <h1>System Calls Visualization</h1>
+        <p>Interactive demonstration of common system calls</p>
+    </header>
+
+    <section>
+        <h2>What are System Calls?</h2>
+        <p>
+            System calls are the programmatic way in which a computer program requests a service from the kernel of the operating system. 
+            These calls are generally available as routines written in C and C++, although various operating systems may use different names for these calls.
+        </p>
+        <p>
+            System calls provide the interface between a process and the operating system. They are the only entry points into the kernel system. 
+            All programs needing resources from the operating system must use system calls.
+        </p>
+        <div class="note">
+            <strong>Note:</strong> System calls are different from function calls. When a program invokes a system call, it traps to the kernel mode, 
+            switching from user mode to kernel mode, allowing the CPU to access protected kernel memory.
+        </div>
+    </section>
+
+    <section class="syscall-category">
+        <h2>Process Management System Calls</h2>
+        <p>
+            Process management system calls allow programs to create, terminate, and manage processes. 
+            These are fundamental to multitasking operating systems.
+        </p>
+        
+        <table class="syscall-table">
+            <thead>
+                <tr>
+                    <th>System Call</th>
+                    <th>Description</th>
+                    <th>Common Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>fork()</code></td>
+                    <td>Creates a new process by duplicating the calling process</td>
+                    <td>Creating child processes</td>
+                </tr>
+                <tr>
+                    <td><code>exec()</code></td>
+                    <td>Replaces the current process image with a new process image</td>
+                    <td>Running a different program</td>
+                </tr>
+                <tr>
+                    <td><code>wait()</code></td>
+                    <td>Suspends execution of the calling process until one of its children terminates</td>
+                    <td>Synchronizing parent and child processes</td>
+                </tr>
+                <tr>
+                    <td><code>exit()</code></td>
+                    <td>Terminates the calling process</td>
+                    <td>Ending program execution</td>
+                </tr>
+                <tr>
+                    <td><code>getpid()</code></td>
+                    <td>Returns the process ID of the calling process</td>
+                    <td>Identifying the current process</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="syscall-category">
+        <h2>File Management System Calls</h2>
+        <p>
+            File management system calls allow programs to create, read, write, and manage files. 
+            These calls are essential for persistent storage operations.
+        </p>
+        
+        <table class="syscall-table">
+            <thead>
+                <tr>
+                    <th>System Call</th>
+                    <th>Description</th>
+                    <th>Common Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>open()</code></td>
+                    <td>Opens a file and returns a file descriptor</td>
+                    <td>Accessing files for reading or writing</td>
+                </tr>
+                <tr>
+                    <td><code>read()</code></td>
+                    <td>Reads data from a file descriptor</td>
+                    <td>Reading file contents</td>
+                </tr>
+                <tr>
+                    <td><code>write()</code></td>
+                    <td>Writes data to a file descriptor</td>
+                    <td>Writing data to files</td>
+                </tr>
+                <tr>
+                    <td><code>close()</code></td>
+                    <td>Closes a file descriptor</td>
+                    <td>Releasing file resources</td>
+                </tr>
+                <tr>
+                    <td><code>lseek()</code></td>
+                    <td>Repositions the file offset of a file descriptor</td>
+                    <td>Random access within files</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="syscall-category">
+        <h2>Memory Management System Calls</h2>
+        <p>
+            Memory management system calls allow programs to allocate and manage memory. 
+            These calls are crucial for dynamic memory operations.
+        </p>
+        
+        <table class="syscall-table">
+            <thead>
+                <tr>
+                    <th>System Call</th>
+                    <th>Description</th>
+                    <th>Common Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>brk()</code>, <code>sbrk()</code></td>
+                    <td>Changes the location of the program break (end of data segment)</td>
+                    <td>Expanding or shrinking the heap</td>
+                </tr>
+                <tr>
+                    <td><code>mmap()</code></td>
+                    <td>Maps files or devices into memory</td>
+                    <td>Memory-mapped I/O, shared memory</td>
+                </tr>
+                <tr>
+                    <td><code>munmap()</code></td>
+                    <td>Unmaps files or devices from memory</td>
+                    <td>Releasing mapped memory</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="syscall-category">
+        <h2>Communication System Calls</h2>
+        <p>
+            Communication system calls allow processes to communicate with each other and with the network.
+            These calls enable interprocess communication and networking.
+        </p>
+        
+        <table class="syscall-table">
+            <thead>
+                <tr>
+                    <th>System Call</th>
+                    <th>Description</th>
+                    <th>Common Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>pipe()</code></td>
+                    <td>Creates a unidirectional data channel</td>
+                    <td>Communication between related processes</td>
+                </tr>
+                <tr>
+                    <td><code>socket()</code></td>
+                    <td>Creates an endpoint for communication</td>
+                    <td>Network communication</td>
+                </tr>
+                <tr>
+                    <td><code>connect()</code></td>
+                    <td>Initiates a connection on a socket</td>
+                    <td>Connecting to a server</td>
+                </tr>
+                <tr>
+                    <td><code>bind()</code></td>
+                    <td>Assigns an address to a socket</td>
+                    <td>Setting up a server socket</td>
+                </tr>
+                <tr>
+                    <td><code>listen()</code></td>
+                    <td>Marks a socket as passive, to accept connections</td>
+                    <td>Preparing to accept client connections</td>
+                </tr>
+                <tr>
+                    <td><code>accept()</code></td>
+                    <td>Accepts a connection on a socket</td>
+                    <td>Handling incoming client connections</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="syscall-category">
+        <h2>System Call Implementation</h2>
+        <p>
+            System calls are typically implemented through a software interrupt mechanism. When a program needs to make a system call:
+        </p>
+        <ol>
+            <li>It places the system call number and arguments in specific registers or on the stack</li>
+            <li>It executes a special instruction (like <code>int 0x80</code> in x86 Linux or <code>syscall</code> in x86_64)</li>
+            <li>The CPU switches to kernel mode and transfers control to the kernel</li>
+            <li>The kernel performs the requested operation</li>
+            <li>The kernel returns the result to the program and switches back to user mode</li>
+        </ol>
+        <p>
+            Modern operating systems often provide libraries (like libc) that wrap system calls in more convenient functions, 
+            hiding the low-level details from application programmers.
+        </p>
+    </section>
+
+    <a href="syscall.html" class="explore-btn">Explore System Calls</a>
+</body>
+</html>
