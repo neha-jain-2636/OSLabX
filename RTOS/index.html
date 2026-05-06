@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTOS Scheduler Simulation</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="osx-nav">
+    <a href="../index.html" class="osx-nav-back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to OSLabX
+    </a>
+    <a href="../index.html" class="osx-brand">
+      <span class="osx-brand-dot"></span> OSLabX
+    </a>
+  </div>
+    <div class="container">
+        <header>
+            <h1>RTOS Scheduling Algorithms</h1>
+        </header>
+
+        <main>
+            <section id="theory-page" class="page active">
+                <div class="theory-section">
+                    <h2>Real-Time Operating Systems (RTOS)</h2>
+                    <p>A Real-Time Operating System (RTOS) is an operating system designed to serve real-time applications that process data as it comes in, typically without buffer delays. RTOS are critical in systems where timing is paramount, such as embedded systems, medical devices, industrial control systems, and aerospace applications.</p>
+                    
+                    <h3>Key Characteristics of RTOS</h3>
+                    <ul>
+                        <li><strong>Deterministic timing behavior:</strong> The system must respond to events within predictable time constraints.</li>
+                        <li><strong>Task scheduling:</strong> Efficient management of multiple tasks with different priorities.</li>
+                        <li><strong>Resource allocation:</strong> Proper distribution of system resources among competing tasks.</li>
+                        <li><strong>Priority-based execution:</strong> Higher priority tasks preempt lower priority ones.</li>
+                        <li><strong>Minimal interrupt latency:</strong> Quick response to external events.</li>
+                    </ul>
+                    
+                    <h3>Real-Time Scheduling Algorithms</h3>
+                    
+                    <div class="algorithm-card">
+                        <h4>Earliest Deadline First (EDF)</h4>
+                        <p>EDF is a dynamic priority scheduling algorithm used in real-time operating systems. In EDF, the task with the earliest deadline has the highest priority at any point in time. EDF is optimal among all scheduling algorithms on preemptive uniprocessors, in the sense that if a set of tasks is schedulable under any scheduling algorithm, it is schedulable under EDF.</p>
+                        <p><strong>Key Features:</strong></p>
+                        <ul>
+                            <li>Dynamic priority assignment</li>
+                            <li>Optimal for uniprocessor systems</li>
+                            <li>Requires deadline information for all tasks</li>
+                            <li>Can achieve 100% CPU utilization</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="algorithm-card">
+                        <h4>Rate Monotonic Scheduling (RMS)</h4>
+                        <p>RMS is a static priority scheduling algorithm commonly used in real-time systems. In RMS, tasks with shorter periods (higher rates) are given higher priority. RMS is simpler to implement than EDF but is not optimal in all cases.</p>
+                        <p><strong>Key Features:</strong></p>
+                        <ul>
+                            <li>Static priority assignment</li>
+                            <li>Simple to implement</li>
+                            <li>Tasks with shorter periods get higher priority</li>
+                            <li>Maximum utilization bound is approximately 69% for large task sets</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="nav-buttons">
+                        <button id="simulate-edf" class="nav-btn">Simulate EDF</button>
+                        <button id="simulate-rms" class="nav-btn">Simulate RMS</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="simulation-page" class="page hidden">
+                <button id="back-to-theory" class="nav-btn" style="margin-bottom: 20px;">← Concept Overview</button>
+                
+                <div class="algorithm-selector">
+                    <button id="select-edf" class="algo-btn active">EDF</button>
+                    <button id="select-rms" class="algo-btn">RMS</button>
+                </div>
+                
+                <div class="simulation-container">
+                    <div class="input-section">
+                        <h3>Task Configuration</h3>
+                        <div class="task-inputs" id="task-inputs">
+                            <div class="task-row">
+                                <div class="input-group">
+                                    <label>Task ID:</label>
+                                    <input type="text" value="Task 1" class="task-id" disabled>
+                                </div>
+                                <div class="input-group">
+                                    <label>Arrival Time (A):</label>
+                                    <input type="number" class="arrival-time" min="0" value="0">
+                                </div>
+                                <div class="input-group">
+                                    <label>Execution Time (C):</label>
+                                    <input type="number" class="execution-time" min="1" value="2">
+                                </div>
+                                <div class="input-group">
+                                    <label>Period (T):</label>
+                                    <input type="number" class="period" min="1" value="10">
+                                </div>
+                                <div class="input-group deadline-input">
+                                    <label>Deadline (D):</label>
+                                    <input type="number" class="deadline" min="1" value="10">
+                                </div>
+                                <button class="remove-task-btn">Remove</button>
+                            </div>
+                        </div>
+                        <button id="add-task" class="add-task-btn">Add Task</button>
+                        
+                        <div class="simulation-controls">
+                            <div class="input-group">
+                                <label>Simulation Duration:</label>
+                                <input type="number" id="simulation-duration" min="5" value="30">
+                            </div>
+                            <button id="run-simulation" class="run-btn">Run Simulation</button>
+                            <button id="reset-simulation" class="reset-btn">Reset</button>
+                        </div>
+                    </div>
+                    
+                    <div class="results-section">
+                        <div class="utilization-box">
+                            <h3>Utilization</h3>
+                            <div id="utilization">0%</div>
+                            <div id="schedulability-test"></div>
+                        </div>
+                        
+                        <div class="gantt-chart-container">
+                            <h3>Gantt Chart</h3>
+                            <div id="gantt-chart" class="gantt-chart"></div>
+                            <div id="timeline" class="timeline"></div>
+                        </div>
+                        
+                        <div class="stats-container">
+                            <h3>Statistics</h3>
+                            <div id="stats" class="stats"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>RTOS Scheduler Simulation</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
