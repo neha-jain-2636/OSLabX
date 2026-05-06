@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process Synchronization Simulator</title>
+
+    <link rel="stylesheet" href="../global.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div id="visual-output">
+
+    <div class="container">
+
+        <header>
+            <h1>Process Synchronization Simulator</h1>
+            <p>
+                Interactive visualization of Producer Consumer,
+                Readers Writers and Dining Philosophers problems
+            </p>
+        </header>
+
+        <div class="tabs">
+
+            <button class="tab active" data-tab="producer-consumer">
+                Producer Consumer
+            </button>
+
+            <button class="tab" data-tab="readers-writers">
+                Readers Writers
+            </button>
+
+            <button class="tab" data-tab="dining-philosophers">
+                Dining Philosophers
+            </button>
+
+        </div>
+
+        <!-- PRODUCER CONSUMER -->
+
+        <div id="producer-consumer" class="tab-content active">
+
+            <h2>Producer Consumer Problem</h2>
+
+            <div class="control-panel">
+
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label>Buffer Size</label>
+                        <input type="number" id="pc-buffer-size" value="5" min="1" max="20">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Producers</label>
+                        <input type="number" id="pc-producers" value="2" min="1" max="10">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Consumers</label>
+                        <input type="number" id="pc-consumers" value="2" min="1" max="10">
+                    </div>
+
+                </div>
+
+                <div class="button-group">
+
+                    <button id="pc-start" class="btn-primary">
+                        Start
+                    </button>
+
+                    <button id="pc-stop" class="btn-danger">
+                        Stop
+                    </button>
+
+                    <button id="pc-reset" class="btn-secondary">
+                        Reset
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="visualization">
+
+                <h3>Buffer</h3>
+
+                <div id="pc-buffer" class="buffer"></div>
+
+                <div class="agents-container">
+
+                    <div class="agent-group">
+                        <h3>Producers</h3>
+                        <div id="pc-producers-container" class="agents"></div>
+                    </div>
+
+                    <div class="agent-group">
+                        <h3>Consumers</h3>
+                        <div id="pc-consumers-container" class="agents"></div>
+                    </div>
+
+                </div>
+
+                <h3>Activity Log</h3>
+                <div id="pc-log" class="log-container"></div>
+
+            </div>
+
+        </div>
+
+        <!-- READERS WRITERS -->
+
+        <div id="readers-writers" class="tab-content">
+
+            <h2>Readers Writers Problem</h2>
+
+            <div class="control-panel">
+
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label>Readers</label>
+                        <input type="number" id="rw-readers" value="4" min="1" max="10">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Writers</label>
+                        <input type="number" id="rw-writers" value="2" min="1" max="10">
+                    </div>
+
+                </div>
+
+                <div class="button-group">
+
+                    <button id="rw-start" class="btn-primary">
+                        Start
+                    </button>
+
+                    <button id="rw-stop" class="btn-danger">
+                        Stop
+                    </button>
+
+                    <button id="rw-reset" class="btn-secondary">
+                        Reset
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="visualization">
+
+                <div class="rw-container">
+
+                    <div id="rw-resource" class="resource">
+                        <div class="resource-status" id="rw-status">
+                            Idle
+                        </div>
+                    </div>
+
+                    <div class="agents-row">
+
+                        <div class="agent-group">
+                            <h3>Readers</h3>
+                            <div id="rw-readers-container" class="agents"></div>
+                        </div>
+
+                        <div class="agent-group">
+                            <h3>Writers</h3>
+                            <div id="rw-writers-container" class="agents"></div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <h3>Activity Log</h3>
+                <div id="rw-log" class="log-container"></div>
+
+            </div>
+
+        </div>
+
+        <!-- DINING PHILOSOPHERS -->
+
+        <div id="dining-philosophers" class="tab-content">
+
+            <h2>Dining Philosophers Problem</h2>
+
+            <div class="control-panel">
+
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label>Philosophers</label>
+                        <input type="number" id="dp-philosophers" value="5" min="2" max="10">
+                    </div>
+
+                </div>
+
+                <div class="button-group">
+
+                    <button id="dp-start" class="btn-primary">
+                        Start
+                    </button>
+
+                    <button id="dp-stop" class="btn-danger">
+                        Stop
+                    </button>
+
+                    <button id="dp-reset" class="btn-secondary">
+                        Reset
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="visualization">
+
+                <div id="dp-table" class="dining-table">
+                    <div class="table-center">TABLE</div>
+                </div>
+
+                <h3>Philosopher Status</h3>
+
+                <div id="dp-status-container" class="status-container"></div>
+
+                <h3>Activity Log</h3>
+                <div id="dp-log" class="log-container"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
