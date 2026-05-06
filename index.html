@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="OSXplore — interactive visualizers for core operating-system concepts: CPU scheduling, memory, paging, disk and file systems." />
+  <title>OSLabX — Operating Systems, Visualized</title>
+  <link rel="stylesheet" href="global.css" />
+  <link rel="stylesheet" href="landing.css" />
+</head>
+<body>
+
+  <div class="grain-overlay"></div>
+  <div class="aurora aurora-a"></div>
+  <div class="aurora aurora-b"></div>
+  <div class="grid-bg"></div>
+
+  <!-- ── NAV ── -->
+  <header class="lp-nav">
+    <a href="#top" class="osx-brand">
+      <span class="osx-brand-dot"></span>
+      OSLabX
+    </a>
+    <nav class="lp-nav-links">
+      <a href="#modules">Modules</a>
+      <a href="#about">About</a>
+      <a href="#team">Team</a>
+    </nav>
+  </header>
+
+  <!-- ── HERO ── -->
+  <main id="top">
+    <section class="lp-hero">
+      <h1 class="lp-title">
+        Operating Systems,<br/>
+        <span class="grad">visualized end-to-end.</span>
+      </h1>
+      <p class="lp-sub">
+        Step through CPU scheduling, paging, memory allocation and disk policies
+        with interactive simulators built for clarity — not just code.
+      </p>
+
+      <div class="lp-cta-row">
+        <a href="#modules" class="lp-cta lp-cta-primary">
+          Explore modules
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#about" class="lp-cta lp-cta-ghost">What's inside ↓</a>
+      </div>
+    </section>
+
+    <!-- ── MODULES ── -->
+    <section id="modules" class="lp-section">
+      <div class="lp-section-head">
+        <span class="lp-eyebrow">The Modules</span>
+        <p>Each module mirrors a textbook chapter — pick a topic, tweak the inputs, and watch the algorithm execute.</p>
+      </div>
+    
+      <div class="module-grid">
+        <!-- Module 1: System Calls -->
+        <a href="SystemCalls/index.html" class="module-card" data-tilt>
+          <div class="module-card-media">
+            <img loading="lazy"
+              src="https://images.unsplash.com/photo-1629654297299-c8506221ca97?auto=format&fit=crop&q=80&w=900"
+              alt="Terminal code interface" />
+            <span class="module-tag">Kernel</span>
+          </div>
+          <div class="module-card-body">
+            <h3>System Calls</h3>
+            <p>Interface between applications and the Linux kernel — covering Process, File, and I/O types.</p>
+            <span class="module-link">Open simulator <span class="arrow">→</span></span>
+          </div>
+        </a>
+    
+        <!-- Module 2: File Allocation -->
+        <a href="File_Allocation/index.html" class="module-card" data-tilt>
+          <div class="module-card-media">
+            <img loading="lazy"
+              src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&q=80&w=900"
+              alt="Storage blocks" />
+            <span class="module-tag">Storage</span>
+          </div>
+          <div class="module-card-body">
+            <h3>File Allocation</h3>
+            <p>Sequential, Indexed, and Linked allocation strategies on a virtual block-mapped disk.</p>
+            <span class="module-link">Open simulator <span class="arrow">→</span></span>
+          </div>
+        </a>
+    
+        <!-- Module 3: File Directories/DAG -->
+        <a href="File-System/index.html" class="module-card" data-tilt>
+          <div class="module-card-media">
+            <img loading="lazy"
+              src="https://images.unsplash.com/photo-1545987796-200677ee1011?auto=format&fit=crop&q=80&w=900"
+              alt="Network tree" />
+            <span class="module-tag">Structure</span>
+          </div>
+          <div class="module-card-body">
+            <h3>File Systems</h3>
+            <p>Explore Single-level, Multi-level, and DAG structures with cycle detection and lookup logic.</p>
+            <span class="module-link">Open simulator <span class="arrow">→</span></span>
+          </div>
+        </a>
+    
+        <!-- Module 4: Disk Scheduling -->
+        <a href="Disk-Scheduling/index.html" class="module-card" data-tilt>
+          <div class="module-card-media">
+            <img loading="lazy"
+              src="https://images.unsplash.com/photo-1601132359864-c974e79890ac?auto=format&fit=crop&q=80&w=900"
+              alt="Hard disk head" />
+            <span class="module-tag">Disk</span>
+          </div>
+          <div class="module-card-body">
+            <h3>Disk Scheduling</h3>
+            <p>C-SCAN, LOOK, and C-LOOK — animated head movement with total seek-time analysis.</p>
+            <span class="module-link">Open simulator <span class="arrow">→</span></span>
+          </div>
+        </a>
+    
+        <!-- Module 5: Synchronization -->
+        <a href="Process-Synchronization/index.html" class="module-card" data-tilt>
+          <div class="module-card-media">
+            <img loading="lazy"
+              src="https://images.unsplash.com/photo-1518186285589-2f7649de83e0?auto=format&fit=crop&q=80&w=900](https://images.unsplash.com/photo-1518186285589-2f7649de83e0?auto=format&fit=crop&q=80&w=900"
+              alt="Interlocking gears" />
+            <span class="module-tag">Concurrency</span>
+          </div>
+          <div class="module-card-body">
+            <h3>Synchronization</h3>
+            <p>Solve classic problems: Critical Sections, Readers-Writers, and Dining Philosophers.</p>
+            <span class="module-link">Open simulator <span class="arrow">→</span></span>
+          </div>
+        </a>
+    
+        <!-- Module 6: Deadlock Detection -->
+        <a href="Deadlock/index.html" class="module-card" data-tilt>
+          <div class="module-card-media">
+            <img loading="lazy"
+              src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=900"
+              alt="Cyber security lock" />
+            <span class="module-tag">Safety</span>
+          </div>
+          <div class="module-card-body">
+            <h3>Deadlock Detection</h3>
+            <p>Analyze Resource Allocation Graphs (RAG) and find safe states using cycle detection.</p>
+            <span class="module-link">Open simulator <span class="arrow">→</span></span>
+          </div>
+        </a>
+    
+        <!-- Module 7: CPU Scheduling -->
+        <a href="CPU-Scheduling/index.html" class="module-card" data-tilt>
+          <div class="module-card-media">
+            <img loading="lazy"
+              src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=900"
+              alt="CPU circuit board" />
+            <span class="module-tag">Processor</span>
+          </div>
+          <div class="module-card-body">
+            <h3>CPU Scheduling</h3>
+            <p>SJF, Multilevel Queue, and Multilevel Feedback logic with interactive Gantt charts.</p>
+            <span class="module-link">Open simulator <span class="arrow">→</span></span>
+          </div>
+        </a>
+    
+        <!-- Module 8: Memory Management -->
+        <a href="Memory-Management/index.html" class="module-card" data-tilt>
+          <div class="module-card-media">
+            <img loading="lazy"
+              src="https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&q=80&w=900"
+              alt="RAM module" />
+            <span class="module-tag">RAM</span>
+          </div>
+          <div class="module-card-body">
+            <h3>Memory Management</h3>
+            <p>Compare Fixed and Variable Partitioning (MFT/MVT) with live memory fragmentation maps.</p>
+            <span class="module-link">Open simulator <span class="arrow">→</span></span>
+          </div>
+        </a>
+    
+        <!-- Module 9: Contiguous Allocation -->
+        <a href="Contiguous-Allocation/index.html" class="module-card" data-tilt>
+          <div class="module-card-media">
+            <img loading="lazy"
+              src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=900"
+              alt="Abstract blocks" />
+            <span class="module-tag">Placement</span>
+          </div>
+          <div class="module-card-body">
+            <h3>Contiguous Allocation</h3>
+            <p>Visualize Best-Fit and Next-Fit algorithms to optimize memory space utilization.</p>
+            <span class="module-link">Open simulator <span class="arrow">→</span></span>
+          </div>
+        </a>
+    
+        <!-- Module 10: Page Replacement -->
+        <a href="Page-Replacement/index.html" class="module-card" data-tilt>
+          <div class="module-card-media">
+            <img loading="lazy"
+              src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&q=80&w=900"
+              alt="Data pages" />
+            <span class="module-tag">Paging</span>
+          </div>
+          <div class="module-card-body">
+            <h3>Page Replacement</h3>
+            <p>FIFO, LRU, and Optimal algorithms — including Belady's anomaly simulation.</p>
+            <span class="module-link">Open simulator <span class="arrow">→</span></span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- ── ABOUT ── -->
+    <section id="about" class="lp-section lp-about">
+      <div class="lp-section-head">
+        <span class="lp-eyebrow">Why we built this</span>
+        <h2>Concepts you can <em>see</em>.</h2>
+        <p>OS coursework is dense with diagrams that never move. We rebuilt those diagrams as living simulators so you can poke at them, break them, and learn how they actually behave.</p>
+      </div>
+      <div class="about-grid">
+        <div class="about-tile">
+          <div class="num">01</div>
+          <h4>Step-by-step execution</h4>
+          <p>Pause, advance and replay every algorithm to follow exactly how state evolves.</p>
+        </div>
+        <div class="about-tile">
+          <div class="num">02</div>
+          <h4>Honest metrics</h4>
+          <p>Average waiting time, seek distance, page faults — surfaced as you iterate.</p>
+        </div>
+        <div class="about-tile">
+          <div class="num">03</div>
+          <h4>Edge cases included</h4>
+          <p>Belady's anomaly, DAG cycles, fragmentation — the failure modes are first-class.</p>
+        </div>
+        <div class="about-tile accent">
+          <div class="num">04</div>
+          <h4>Zero install</h4>
+          <p>Pure HTML, CSS and JavaScript. Open any module and it just runs.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TEAM ── -->
+    <section id="team" class="lp-section">
+      <div class="lp-section-head">
+        <span class="lp-eyebrow">Built by</span>
+        <h2>The team behind OSLabX</h2>
+      </div>
+      <div class="team-grid">
+        <div class="team-card"><span class="t-num">01</span><div><b>Lankalapalli Udaykiran</b><span>Deadlock Detection</span></div></div>
+        <div class="team-card"><span class="t-num">02</span><div><b>Madakkagari Dhakshesh Naidu</b><span>Memory Management</span></div></div>
+        <div class="team-card"><span class="t-num">03</span><div><b>Marepalli Kowndinya Vasudev</b><span>File System</span></div></div>
+        <div class="team-card"><span class="t-num">04</span><div><b>Marwin Francis Kaitharath</b><span>Synchronization</span></div></div>
+        <div class="team-card"><span class="t-num">05</span><div><b>Mudu Keerthana</b><span>CPU Scheduling</span></div></div>
+        <div class="team-card"><span class="t-num">06</span><div><b>Naseh Ameen Sayrawala</b><span>Page Replacement</span></div></div>
+        <div class="team-card"><span class="t-num">07</span><div><b>Neha Jain</b><span>File Allocation</span></div></div>
+        <div class="team-card"><span class="t-num">08</span><div><b>Niteesh Kumar</b><span>System Calls</span></div></div>
+        <div class="team-card"><span class="t-num">09</span><div><b>Parmeet Singh Saini</b><span>Continuous Memory Allocation</span></div></div>
+        <div class="team-card"><span class="t-num">10</span><div><b>Poluri Sai Jishnu</b><span>Disk Scheduling</span></div></div>
+      </div>
+    </section>
+
+    <footer class="lp-footer">
+      <span class="osx-brand"><span class="osx-brand-dot"></span> OSLabX</span>
+      <p>Operating Systems Mini Project · 2026</p>
+    </footer>
+  </main>
+
+  <script src="landing.js"></script>
+</body>
+</html>

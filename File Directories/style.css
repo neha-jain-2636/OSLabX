@@ -8,34 +8,34 @@
 
 /* ── Variables ──────────────────────────────────────────────── */
 :root {
-  --bg:           #0f1117;
-  --bg-card:      #16191f;
-  --bg-input:     #1c2029;
-  --bg-hover:     #1e2230;
+  --bg:           #0b0d12;
+  --bg-card:      #11141c;
+  --bg-input:     #1a1f2b;
+  --bg-hover:     #1f2533;
 
-  --border:       rgba(255,255,255,0.07);
-  --border-md:    rgba(255,255,255,0.11);
-  --border-accent:rgba(99,179,237,0.35);
+  --border:       rgba(255,255,255,0.06);
+  --border-md:    rgba(255,255,255,0.10);
+  --border-accent:rgba(124,156,255,0.35);
 
-  --accent:       #63b3ed;
-  --accent-dim:   rgba(99,179,237,0.12);
-  --accent-glow:  rgba(99,179,237,0.2);
-  --green:        #68d391;
-  --green-dim:    rgba(104,211,145,0.12);
-  --amber:        #f6ad55;
-  --amber-dim:    rgba(246,173,85,0.12);
-  --red:          #fc8181;
-  --red-dim:      rgba(252,129,129,0.10);
+  --accent:       #7c9cff;
+  --accent-dim:   rgba(124,156,255,0.10);
+  --accent-glow:  rgba(124,156,255,0.20);
+  --green:        #6ee7b7;
+  --green-dim:    rgba(110,231,183,0.12);
+  --amber:        #fbbf24;
+  --amber-dim:    rgba(251,191,36,0.12);
+  --red:          #f87171;
+  --red-dim:      rgba(248,113,113,0.10);
 
-  --text-1:       #e2e8f0;
-  --text-2:       #94a3b8;
-  --text-3:       #64748b;
+  --text-1:       #e6e9f2;
+  --text-2:       #9aa3b8;
+  --text-3:       #5e6781;
 
   --radius-sm:    6px;
   --radius:       10px;
   --radius-lg:    14px;
 
-  --font:         'Inter', sans-serif;
+  --font:         'Inter', system-ui, sans-serif;
   --mono:         'JetBrains Mono', monospace;
 
   --ease:         cubic-bezier(.4, 0, .2, 1);
@@ -74,6 +74,8 @@ html { scroll-behavior: smooth; }
 body {
   font-family: var(--font);
   background: var(--bg);
+  background-image: radial-gradient(ellipse 1200px 600px at 12% -10%, rgba(124,156,255,0.07), transparent 60%), radial-gradient(ellipse 900px 500px at 100% 0%, rgba(167,139,250,0.05), transparent 55%);
+  background-attachment: fixed;
   color: var(--text-1);
   min-height: 100vh;
   font-size: 14px;
