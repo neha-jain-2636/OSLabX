@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <title>DAG File System — OS Mini Project</title>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-glow glow-1"></div>
+  <div class="bg-glow glow-2"></div>
+
+  <div class="module-wrapper">
+
+    <!-- Header -->
+    <header class="module-header">
+      <div class="module-icon" aria-hidden="true">
+        <svg viewBox="0 0 64 64" fill="none" class="module-icon-svg">
+          <defs>
+            <linearGradient id="iconGrad" x1="8" y1="6" x2="54" y2="58" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#00ffa3"></stop>
+              <stop offset="1" stop-color="#00c8ff"></stop>
+            </linearGradient>
+          </defs>
+          <path d="M16 18h12l4 5h16a4 4 0 0 1 4 4v18a5 5 0 0 1-5 5H17a5 5 0 0 1-5-5V22a4 4 0 0 1 4-4Z" fill="url(#iconGrad)" fill-opacity=".12" stroke="url(#iconGrad)" stroke-width="1.5"/>
+          <path d="M19 33 30 26" stroke="#00ffa3" stroke-width="2" stroke-linecap="round"/>
+          <path d="M34 26h11" stroke="#00c8ff" stroke-width="2" stroke-linecap="round"/>
+          <path d="M30 26v12" stroke="#00ffa3" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="19" cy="33" r="4" fill="rgba(0,255,163,0.1)" stroke="#00ffa3" stroke-width="1.5"/>
+          <circle cx="30" cy="26" r="4" fill="rgba(0,200,255,0.1)" stroke="#00c8ff" stroke-width="1.5"/>
+          <circle cx="30" cy="40" r="4" fill="rgba(0,255,163,0.1)" stroke="#00ffa3" stroke-width="1.5"/>
+          <circle cx="47" cy="26" r="4" fill="rgba(0,200,255,0.1)" stroke="#00c8ff" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="module-title">
+        <div class="title-eyebrow"><span class="dot"></span>OS Mini Project · File Systems</div>
+        <h1>DAG File System</h1>
+        <p class="subtitle">Simulate Directed Acyclic Graph file systems with dependency tracking, cycle detection &amp; topological sorting.</p>
+      </div>
+      <div class="theme-toggle-wrap">
+        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme" title="Toggle theme">
+          <span class="theme-icon">◐</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Live Stats Bar -->
+    <div class="stats-bar" id="live-summary">
+      <div class="stat-pill">
+        <span class="stat-pill-val" id="stat-files">0</span>
+        <span class="stat-pill-label">Files</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-pill">
+        <span class="stat-pill-val" id="stat-dirs">0</span>
+        <span class="stat-pill-label">Folders</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-pill">
+        <span class="stat-pill-val" id="stat-links">0</span>
+        <span class="stat-pill-label">Links</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-pill">
+        <span class="stat-pill-val" id="stat-size">0 KB</span>
+        <span class="stat-pill-label">Total Size</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-pill validation-pill" id="validation-pill">
+        <span class="pulse-dot"></span>
+        <span id="validation-text">Ready</span>
+      </div>
+    </div>
+
+    <!-- Status Banner -->
+    <div id="error-msg" class="status-banner top-status-banner hidden" role="alert" aria-live="assertive"></div>
+
+    <!-- Main Builder Card -->
+    <div class="builder-shell">
+
+      <!-- Left Panel: Controls -->
+      <div class="left-panel">
+
+        <!-- Structure Mode Selector -->
+        <div class="panel-section">
+          <div class="section-label"><span class="section-num">MODE</span>&nbsp;Directory Structure</div>
+          <div class="structure-selector">
+            <button class="struct-btn active" data-structure="dag" onclick="setStructureMode('dag', this)">
+              <span class="struct-icon">◈</span>
+              <span class="struct-name">DAG</span>
+              <span class="struct-desc">Shared refs</span>
+            </button>
+            <button class="struct-btn" data-structure="single" onclick="setStructureMode('single', this)">
+              <span class="struct-icon">▬</span>
+              <span class="struct-name">Single</span>
+              <span class="struct-desc">Flat</span>
+            </button>
+            <button class="struct-btn" data-structure="multi" onclick="setStructureMode('multi', this)">
+              <span class="struct-icon">◫</span>
+              <span class="struct-name">Multi</span>
+              <span class="struct-desc">Nested</span>
+            </button>
+            <button class="struct-btn" data-structure="tree" onclick="setStructureMode('tree', this)">
+              <span class="struct-icon">⬡</span>
+              <span class="struct-name">Tree</span>
+              <span class="struct-desc">Rooted</span>
+            </button>
+          </div>
+          <div id="structure-hint" class="hint-band">
+            DAG mode allows shared references while still preventing cycles.
+          </div>
+        </div>
+
+        <!-- Step 1: Files -->
+        <div class="panel-section">
+          <div class="section-label"><span class="section-num">01</span>&nbsp;Add Files</div>
+          <div class="input-row">
+            <div class="input-wrap">
+              <span class="input-icon">📄</span>
+              <input type="text" id="file-name-input" class="field" placeholder="filename" autocomplete="off" />
+            </div>
+            <button class="add-btn" type="button" onclick="addFile()">+</button>
+          </div>
+          <div id="files-list" class="chip-list empty-state-inline">No files added yet.</div>
+        </div>
+
+        <!-- Step 2: Directories -->
+        <div class="panel-section">
+          <div class="section-label"><span class="section-num">02</span>&nbsp;Add Directories</div>
+          <div class="input-row">
+            <div class="input-wrap">
+              <span class="input-icon">📁</span>
+              <input type="text" id="directory-name-input" class="field" placeholder="folder-name" autocomplete="off" />
+            </div>
+            <button class="add-btn" type="button" onclick="addDirectory()">+</button>
+          </div>
+          <div id="directories-list" class="chip-list empty-state-inline">No directories added yet.</div>
+        </div>
+
+        <!-- Step 3: Dependencies -->
+        <div class="panel-section">
+          <div class="section-label"><span class="section-num">03</span>&nbsp;Link Dependencies</div>
+          <div class="dep-form">
+            <div class="select-wrap">
+              <label class="select-label">Parent Node</label>
+              <select id="dependency-from" class="field select-field"></select>
+            </div>
+            <div class="dep-arrow-badge">→</div>
+            <div class="select-wrap">
+              <label class="select-label">Child Node</label>
+              <select id="dependency-to" class="field select-field"></select>
+            </div>
+            <button class="add-btn add-btn-link" type="button" onclick="addDependency()">Link</button>
+          </div>
+          <div id="dependencies-list" class="chip-list empty-state-inline">No dependencies added yet.</div>
+        </div>
+
+        <!-- Quick Presets -->
+        <div class="panel-section">
+          <div class="section-label"><span class="section-num">⚡</span>&nbsp;Quick Presets</div>
+          <div class="preset-row">
+            <button class="preset-btn" onclick="loadPreset('single')">Single</button>
+            <button class="preset-btn" onclick="loadPreset('multi')">Multi</button>
+            <button class="preset-btn" onclick="loadPreset('tree')">Tree</button>
+            <button class="preset-btn" onclick="loadPreset('dag')">DAG</button>
+            <button class="preset-btn preset-danger" onclick="loadPreset('cycle')">Cycle ⚠</button>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="panel-section action-section">
+          <button class="run-btn" onclick="runSimulation()">
+            <span class="run-icon">▶</span> Run Simulation
+          </button>
+          <div class="secondary-actions">
+            <button class="sec-btn" onclick="resetAll()">↺ Reset</button>
+            <button class="sec-btn" onclick="exportResults()" id="export-btn" style="display:none;">⬇ Export JSON</button>
+          </div>
+        </div>
+
+      </div><!-- /left-panel -->
+
+      <!-- Right Panel: Live Status -->
+      <div class="right-panel">
+        <div class="status-card-main" id="live-status-card">
+          <span class="status-kicker">Validation Center</span>
+          <h4>Ready to build</h4>
+          <p>Choose a structure, add nodes, and create valid parent-to-child relations. Rule checks and cycle detection will appear here in real time.</p>
+        </div>
+
+        <!-- Concept Cards -->
+        <div class="concept-list">
+          <div class="concept-item">
+            <span class="concept-num">01</span>
+            <div>
+              <strong>Single-Level</strong>
+              <p>Flat directory. Easy for small systems, conflicts grow quickly.</p>
+            </div>
+          </div>
+          <div class="concept-item">
+            <span class="concept-num">02</span>
+            <div>
+              <strong>Multi-Level</strong>
+              <p>Nested subdirectories, one parent per item.</p>
+            </div>
+          </div>
+          <div class="concept-item">
+            <span class="concept-num">03</span>
+            <div>
+              <strong>Tree</strong>
+              <p>One root, every node has exactly one parent.</p>
+            </div>
+          </div>
+          <div class="concept-item concept-item-accent">
+            <span class="concept-num">04</span>
+            <div>
+              <strong>DAG + Innovation</strong>
+              <p>Shared refs without cycles. Includes lookup cost &amp; storage analysis.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /builder-shell -->
+
+    <!-- Output Area -->
+    <div id="visual-output">
+      <div class="output-placeholder">
+        <div class="placeholder-icon">
+          <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6M3 21h18M3 10l9-7 9 7" />
+          </svg>
+        </div>
+        <p>Results will appear here after simulation</p>
+        <span class="placeholder-hint">// Load a preset and click Run →</span>
+      </div>
+    </div>
+
+  </div><!-- /module-wrapper -->
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="script.js?v=15"></script>
+</body>
+</html>
