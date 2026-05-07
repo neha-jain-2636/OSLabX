@@ -1,12 +1,10 @@
 /* ============================================================
-   script.js — Module 09 - Contiguous Memory Allocation
+   script.js — Contiguous Memory Allocation
    Implements: Best-Fit, Next-Fit, Worst-Fit algorithms
    ============================================================ */
 
-/* ── Global state for Next-Fit algorithm ───────────────────── */
-let nextFitPointer = 0; // Tracks where Next-Fit search left off
+let nextFitPointer = 0;
 
-/* ── Helper: Show / Hide Error ─────────────────────────────── */
 function showError(message) {
   const el = document.getElementById('error-msg');
   el.textContent = message;
@@ -19,19 +17,13 @@ function clearError() {
   el.classList.add('hidden');
 }
 
-/* ── Helper: Render output HTML ────────────────────────────── */
 function renderOutput(html) {
   document.getElementById('visual-output').innerHTML = html;
 }
 
-/* ============================================================
-   MEMORY ALLOCATION ALGORITHMS
-   ============================================================ */
-
 /**
  * Best-Fit Algorithm
  * Finds the SMALLEST free block that fits the process
- * Rationale: Leaves largest possible free blocks for future processes
  */
 function bestFit(memory, processSize) {
   let bestBlockIndex = -1;
@@ -45,17 +37,14 @@ function bestFit(memory, processSize) {
       }
     }
   }
-
   return bestBlockIndex;
 }
 
 /**
  * Next-Fit Algorithm
  * Continues search from where the last allocation ended
- * Rationale: Distributes allocations throughout memory, reduces scanning time
  */
 function nextFit(memory, processSize) {
-  // Search from nextFitPointer onwards (with wrap-around)
   for (let i = 0; i < memory.length; i++) {
     const idx = (nextFitPointer + i) % memory.length;
     if (memory[idx].type === 'free' && memory[idx].size >= processSize) {
@@ -69,7 +58,6 @@ function nextFit(memory, processSize) {
 /**
  * Worst-Fit Algorithm (NEW)
  * Finds the LARGEST free block available
- * Rationale: Leaves more fragmented memory but tries to preserve medium-sized blocks
  */
 function worstFit(memory, processSize) {
   let worstBlockIndex = -1;
@@ -83,35 +71,27 @@ function worstFit(memory, processSize) {
       }
     }
   }
-
   return worstBlockIndex;
 }
 
-/* ============================================================
-   SIMULATION ENGINE
-   ============================================================ */
-
-/**
- * Simulates memory allocation for multiple processes
- */
-function simulateAllocation(totalMemory, strategy, processes) {
-  // Initialize memory: one free block
-  const memory = [
-    {
+function simulateAllocation(totalMemory, blockSizes, strategy, processes) {
+  let currentAddress = 0;
+  const memory = blockSizes.map(size => {
+    const block = {
       type: 'free',
-      size: totalMemory,
+      size: size,
       name: 'Free',
-      startAddress: 0,
-    }
-  ];
+      startAddress: currentAddress,
+    };
+    currentAddress += size;
+    return block;
+  });
 
   const allocations = [];
   const allocationDetails = [];
 
-  // Reset Next-Fit pointer at start of simulation
   nextFitPointer = 0;
 
-  // Process each allocation request
   for (const proc of processes) {
     const [name, size] = proc.split(':');
     const processSize = parseInt(size);
@@ -122,12 +102,12 @@ function simulateAllocation(totalMemory, strategy, processes) {
         size: processSize,
         status: 'Invalid size',
         address: '-',
-        allocation: 'FAILED'
+        allocation: 'FAILED',
+        blockUsed: '-'
       });
       continue;
     }
 
-    // Choose allocation strategy
     let blockIndex = -1;
     switch (strategy) {
       case 'best-fit':
@@ -142,25 +122,26 @@ function simulateAllocation(totalMemory, strategy, processes) {
     }
 
     if (blockIndex === -1) {
-      // Allocation failed
       allocationDetails.push({
         process: name,
         size: processSize,
         status: 'No suitable block',
         address: '-',
-        allocation: 'FAILED'
+        allocation: 'FAILED',
+        blockUsed: '-'
       });
     } else {
-      // Allocation succeeded
       const block = memory[blockIndex];
       const startAddress = block.startAddress;
+      const blockSizeUsed = block.size;
 
       allocationDetails.push({
         process: name,
         size: processSize,
-        status: `Block size: ${block.size}`,
+        status: `Remaining: ${blockSizeUsed - processSize} KB`,
         address: startAddress,
-        allocation: 'SUCCESS'
+        allocation: 'SUCCESS',
+        blockUsed: blockSizeUsed
       });
 
       allocations.push({
@@ -169,9 +150,7 @@ function simulateAllocation(totalMemory, strategy, processes) {
         startAddress,
       });
 
-      // Split the free block
       if (block.size === processSize) {
-        // Exact fit
         memory[blockIndex] = {
           type: 'allocated',
           size: processSize,
@@ -179,7 +158,6 @@ function simulateAllocation(totalMemory, strategy, processes) {
           startAddress,
         };
       } else {
-        // Partial fit - create allocated block and remaining free block
         memory[blockIndex] = {
           type: 'allocated',
           size: processSize,
@@ -197,7 +175,6 @@ function simulateAllocation(totalMemory, strategy, processes) {
     }
   }
 
-  // Calculate fragmentation metrics
   const totalAllocated = allocations.reduce((sum, a) => sum + a.size, 0);
   const totalFree = memory.reduce((sum, m) => m.type === 'free' ? sum + m.size : sum, 0);
   const freeBlocks = memory.filter(m => m.type === 'free').length;
@@ -220,13 +197,6 @@ function simulateAllocation(totalMemory, strategy, processes) {
   };
 }
 
-/* ============================================================
-   OUTPUT RENDERING
-   ============================================================ */
-
-/**
- * Render memory visualization
- */
 function renderMemoryVisualization(memory, totalMemory) {
   const segments = memory.map(block => {
     const percentage = (block.size / totalMemory) * 100;
@@ -241,7 +211,7 @@ function renderMemoryVisualization(memory, totalMemory) {
 
   return `
     <div class="memory-block-row">
-      <div class="memory-label">Memory Layout</div>
+      <div class="memory-label">Memory Layout After Allocation</div>
       <div class="memory-visual">
         ${segments}
       </div>
@@ -259,9 +229,6 @@ function renderMemoryVisualization(memory, totalMemory) {
   `;
 }
 
-/**
- * Render statistics summary
- */
 function renderStats(stats) {
   return `
     <div class="stats-row">
@@ -285,9 +252,6 @@ function renderStats(stats) {
   `;
 }
 
-/**
- * Render fragmentation percentage
- */
 function renderFragmentation(stats) {
   const fragPercent = parseFloat(stats.fragmentationPercentage);
   return `
@@ -300,9 +264,6 @@ function renderFragmentation(stats) {
   `;
 }
 
-/**
- * Render allocation details table
- */
 function renderAllocationTable(details) {
   const rows = details.map(d => {
     const statusClass = d.allocation === 'SUCCESS' ? 'status-success' : 'status-failed';
@@ -310,6 +271,7 @@ function renderAllocationTable(details) {
       <tr>
         <td><strong>${d.process}</strong></td>
         <td>${d.size} KB</td>
+        <td>${d.blockUsed}</td>
         <td>${d.address}</td>
         <td>${d.status}</td>
         <td><span class="${statusClass}">${d.allocation}</span></td>
@@ -325,6 +287,7 @@ function renderAllocationTable(details) {
           <tr>
             <th>Process</th>
             <th>Size</th>
+            <th>Block Size Used</th>
             <th>Start Address</th>
             <th>Block Info</th>
             <th>Status</th>
@@ -338,22 +301,19 @@ function renderAllocationTable(details) {
   `;
 }
 
-/**
- * Render algorithm description
- */
 function renderAlgorithmInfo(strategy) {
   const descriptions = {
     'best-fit': {
       title: 'Best-Fit Algorithm',
-      description: 'Allocates the SMALLEST free block that fits the process size. Minimizes wasted space in the allocated block but can lead to many small unusable free blocks (fragmentation).'
+      description: 'Searches through all free blocks and allocates the SMALLEST block that fits the process. Minimizes wasted space per allocation but can lead to fragmentation with many small unusable blocks.'
     },
     'next-fit': {
       title: 'Next-Fit Algorithm',
-      description: 'Continues searching from where the last allocation search ended. Distributes allocations more evenly throughout memory, reducing search time but potentially increasing fragmentation.'
+      description: 'Continues searching from where the last allocation ended (wraps around to the beginning if needed). Distributes allocations throughout memory and reduces search time.'
     },
     'worst-fit': {
       title: 'Worst-Fit Algorithm (NEW)',
-      description: 'Allocates the LARGEST free block that fits the process size. Leaves smaller free blocks, preserving larger blocks for future processes. Often results in more fragmentation.'
+      description: 'Searches through all free blocks and allocates the LARGEST block that fits the process. Preserves smaller blocks but uses more memory per allocation.'
     }
   };
 
@@ -366,21 +326,38 @@ function renderAlgorithmInfo(strategy) {
   `;
 }
 
-/* ============================================================
-   MAIN SIMULATION FUNCTION
-   ============================================================ */
-
 function runSimulation() {
   clearError();
 
-  // Read inputs
   const totalMemoryStr = document.getElementById('totalMemory').value.trim();
+  const blocksStr = document.getElementById('blocks').value.trim();
   const strategy = document.getElementById('strategy').value;
   const processesStr = document.getElementById('processes').value.trim();
 
-  // Validate
   if (!totalMemoryStr || isNaN(totalMemoryStr) || parseInt(totalMemoryStr) <= 0) {
     showError('⚠️ Please enter a valid total memory size (must be > 0).');
+    return;
+  }
+
+  if (!blocksStr) {
+    showError('⚠️ Please enter memory block sizes (e.g., 300 200 150 350).');
+    return;
+  }
+
+  const totalMemory = parseInt(totalMemoryStr);
+  const blockSizes = blocksStr.split(/\s+/).map(Number);
+
+  let totalBlockMemory = 0;
+  for (const blockSize of blockSizes) {
+    if (isNaN(blockSize) || blockSize <= 0) {
+      showError('⚠️ All block sizes must be positive numbers.');
+      return;
+    }
+    totalBlockMemory += blockSize;
+  }
+
+  if (totalBlockMemory !== totalMemory) {
+    showError(`⚠️ Sum of blocks (${totalBlockMemory} KB) must equal total memory (${totalMemory} KB).`);
     return;
   }
 
@@ -389,10 +366,8 @@ function runSimulation() {
     return;
   }
 
-  const totalMemory = parseInt(totalMemoryStr);
   const processes = processesStr.split(/\s+/);
 
-  // Validate process format
   for (const proc of processes) {
     if (!proc.includes(':')) {
       showError(`⚠️ Invalid format: "${proc}". Use "name:size" format (e.g., P1:300).`);
@@ -409,42 +384,29 @@ function runSimulation() {
     }
   }
 
-  // Run simulation
-  const result = simulateAllocation(totalMemory, strategy, processes);
+  const result = simulateAllocation(totalMemory, blockSizes, strategy, processes);
 
-  // Build output
   const outputHTML = `
     <h3 style="margin-bottom:16px;">Simulation Results</h3>
-
     ${renderAlgorithmInfo(strategy)}
-
     ${renderMemoryVisualization(result.memory, totalMemory)}
-
     ${renderStats(result.stats)}
-
     ${renderFragmentation(result.stats)}
-
     ${renderAllocationTable(result.allocationDetails)}
-
     <p class="text-muted mt-16" style="font-size:0.82rem;">
-      💡 Tip: Hover over memory blocks to see size details. Try different strategies to compare fragmentation patterns.
+      💡 Tip: Change the strategy and blocks to see how different algorithms handle fragmentation!
     </p>
   `;
 
   renderOutput(outputHTML);
 }
 
-/* ============================================================
-   RESET FUNCTION
-   ============================================================ */
-
 function resetAll() {
-  // Clear all input fields
-  document.getElementById('totalMemory').value = '1024';
+  document.getElementById('totalMemory').value = '1000';
+  document.getElementById('blocks').value = '300 200 150 350';
   document.getElementById('strategy').value = 'best-fit';
-  document.getElementById('processes').value = '';
+  document.getElementById('processes').value = 'P1:250 P2:150 P3:200 P4:100';
 
-  // Clear error and output
   clearError();
   nextFitPointer = 0;
   renderOutput(`
