@@ -1,20 +1,13 @@
 /* ============================================================
-   style.css — Module 09 - Contiguous Memory Allocation
-   ⚠️  Only write styles SPECIFIC to your module here.
-   ⚠️  Do NOT redefine colors, fonts, buttons, cards, or tables.
-       Those come from global.css automatically.
+   style.css — Contiguous Memory Allocation
    ============================================================ */
 
-/* ── Module Wrapper ─────────────────────────────────────────── */
-/* This gives your content a consistent max-width and padding.  */
-/* Do NOT remove or change this block.                          */
 .module-wrapper {
   max-width: 1000px;
   margin: 0 auto;
   padding: 32px 24px;
 }
 
-/* ── Memory Block Visualization ────────────────────────────── */
 .memory-container {
   display: flex;
   flex-direction: column;
@@ -82,10 +75,6 @@
   color: var(--text-muted);
 }
 
-.memory-segment.fragmented {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-}
-
 .memory-segment-label {
   pointer-events: none;
   white-space: nowrap;
@@ -97,24 +86,25 @@
   position: absolute;
   background: var(--text-primary);
   color: var(--bg-page);
-  padding: 6px 10px;
+  padding: 8px 12px;
   border-radius: var(--radius-sm);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   white-space: nowrap;
-  bottom: -28px;
+  bottom: 100%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(-8px);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s;
-  z-index: 20;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+  visibility: hidden;
 }
 
 .memory-segment:hover .memory-segment-tooltip {
   opacity: 1;
+  visibility: visible;
 }
 
-/* ── Summary Stats Box ─────────────────────────────────────── */
 .stats-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -145,7 +135,6 @@
   margin-top: 4px;
 }
 
-/* ── Fragmentation Meter ───────────────────────────────────── */
 .fragmentation-meter {
   margin-top: 16px;
   display: flex;
@@ -182,7 +171,6 @@
   font-weight: 600;
 }
 
-/* ── Allocation Results Table ──────────────────────────────── */
 .results-table {
   width: 100%;
   border-collapse: collapse;
@@ -226,7 +214,6 @@
   font-weight: 700;
 }
 
-/* ── Algorithm Comparison ──────────────────────────────────── */
 .algorithm-info {
   background: var(--bg-card-alt);
   border-left: 4px solid var(--accent);
@@ -247,7 +234,6 @@
   color: var(--text-secondary);
 }
 
-/* ── Memory Legend ─────────────────────────────────────────── */
 .memory-legend {
   display: flex;
   gap: 20px;
@@ -277,11 +263,6 @@
   border: 1px solid var(--border);
 }
 
-.legend-color.fragmented {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-}
-
-/* ── Responsive adjustments ────────────────────────────────── */
 @media (max-width: 768px) {
   .memory-visual {
     height: 40px;
