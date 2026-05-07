@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Frame Allocation</title>
+    <style>
+      body {
+        font-family: Montserrat, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #0d1117;
+        color: #e6e6e6;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .header-card {
+        background: linear-gradient(145deg, #0d1117, #161b22);
+        width: 90%;
+        border-radius: 8px;
+        max-width: 1000px;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      h1 {
+        text-align: center;
+        background: linear-gradient(15deg, #8e44ad, #388bfd);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+        animation: heading-glow 2s infinite alternate;
+        margin: 0;
+      }
+
+      .subheading {
+        text-align: center;
+        color: #8b949e;
+        margin-top: 10px;
+      }
+
+      @keyframes heading-glow {
+        0% {
+          text-shadow: 0 0 5px rgba(88, 166, 255, 0.5);
+        }
+        100% {
+          text-shadow: 0 0 15px rgba(88, 166, 255, 0.8);
+        }
+      }
+
+      .content-card {
+        background: linear-gradient(145deg, #0d1117, #161b22);
+        border: 0.1px solid #388bfd;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 1000px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .method-card {
+        background: linear-gradient(145deg, #0d1117, #161b22);
+        /* border: 1px solid #388bfd; */
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      }
+
+      .disadvantage,
+      .advantage {
+        padding: 10px 15px;
+        border-radius: 4px;
+        margin: 10px 0;
+      }
+
+      .disadvantage {
+        background-color: rgba(248, 81, 73, 0.1);
+        border-left: 4px solid #f85149;
+      }
+
+      .advantage {
+        background-color: rgba(56, 139, 253, 0.1);
+        border-left: 4px solid #388bfd;
+      }
+
+      h2 {
+        background: linear-gradient(15deg, #58a6ff, #388bfd);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
+        margin-top: 5px;
+      }
+
+      h3 {
+        color: #58a6ff;
+        margin-bottom: 5px;
+      }
+
+      .formula {
+        background-color: #161b22;
+        padding: 10px;
+        border-radius: 5px;
+        font-family: "Courier New", monospace;
+        margin: 10px 0;
+        text-align: center;
+        border: 1px dashed #388bfd;
+      }
+
+      .comparison-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        border: 2px solid #388bfd;
+        box-shadow: 0 0 10px rgba(56, 139, 253, 0.3);
+      }
+
+      .comparison-table th,
+      .comparison-table td {
+        padding: 12px;
+        text-align: left;
+        border: 1px solid #30363d;
+      }
+
+      .comparison-table th {
+        background: linear-gradient(to bottom, #388bfd, #1f6feb);
+        color: #f0f6fc;
+        font-weight: bold;
+        text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.5);
+      }
+
+      .comparison-table tr:nth-child(even) {
+        background-color: #161b22;
+      }
+
+      .comparison-table tr:nth-child(odd) {
+        background-color: #0d1117;
+      }
+
+      .visual-container {
+        display: flex;
+        justify-content: center;
+        margin: 20px 0;
+      }
+
+      .frame-visualization {
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 600px;
+        justify-content: center;
+      }
+
+      .frame {
+        width: 40px;
+        height: 40px;
+        margin: 4px;
+        border: 1px solid #388bfd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        border-radius: 3px;
+        background-color: #0d1117;
+        animation: glow 1.5s infinite alternate;
+      }
+
+      @keyframes glow {
+        0% {
+          border-color: #388bfd;
+          box-shadow: 0 0 3px rgba(56, 139, 253, 0.3);
+        }
+        100% {
+          border-color: #58a6ff;
+          box-shadow: 0 0 8px rgba(88, 166, 255, 0.6);
+        }
+      }
+
+      .frame.p1 {
+        background-color: rgba(88, 166, 255, 0.2);
+      }
+      .frame.p2 {
+        background-color: rgba(248, 81, 73, 0.2);
+      }
+      .frame.p3 {
+        background-color: rgba(63, 185, 80, 0.2);
+      }
+      .frame.p4 {
+        background-color: rgba(187, 128, 255, 0.2);
+      }
+      .frame.p5 {
+        background-color: rgba(250, 200, 99, 0.2);
+      }
+      .frame.p6 {
+        background-color: rgba(249, 130, 108, 0.2);
+      }
+      .frame.p7 {
+        background-color: rgba(138, 180, 248, 0.2);
+      }
+      .frame.unused {
+        background-color: #0d1117;
+      }
+
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 15px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        margin: 5px 10px;
+      }
+
+      .legend-color {
+        width: 15px;
+        height: 15px;
+        margin-right: 5px;
+        border: 1px solid #388bfd;
+        border-radius: 2px;
+      }
+
+      .simulation-button-container {
+    display: flex;
+    justify-content: center;
+    margin: 30px 0;
+    width: 100%;
+}
+
+.simulation-button {
+    padding: 12px 30px;
+    background: linear-gradient(45deg, #388bfd, #1f6feb);
+    color: #f0f6fc;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.simulation-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, #58a6ff, #388bfd);
+    transition: all 0.5s ease;
+    z-index: -1;
+}
+
+.simulation-button:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(56, 139, 253, 0.5);
+}
+
+.simulation-button:hover::before {
+    left: 0;
+}
+    </style>
+  </head>
+  <body>
+    <div class="header-card">
+      <h1>Frame Allocation Techniques</h1>
+      <div class="subheading">
+        Memory management strategies in operating systems
+      </div>
+    </div>
+    <div class="simulation-button-container">
+      <a href="frame2.html" class="simulation-button">Try the Simulation →</a>
+  </div>
+    <div class="content-card">
+      <div class="method-card">
+        <h2>Equal Frame Allocation</h2>
+        <p>
+          In equal frame allocation, the processes are assigned equally among
+          the processes in the OS. For example, if the system has 30 frames and
+          7 processes, each process will get 4 frames. The 2 frames that are not
+          assigned to any system process may be used as a free-frame buffer pool
+          in the system.
+        </p>
+        <div class="advantage">
+          <h3>Advantages</h3>
+          <p>
+            Simple to implement, ensures fairness, easy debugging, predictable behavior, prevents starvation, uniform access, balanced load, consistent policy, reduces complexity, stable performance.
+          </p>
+        </div>
+        <div class="disadvantage">
+          <h3>Disadvantage</h3>
+          <p>
+            In a system with processes of varying sizes, assigning equal frames
+            to each process makes little sense. Many allotted empty frames will
+            be wasted if many frames are assigned to a small task.
+          </p>
+        </div>
+      </div>
+
+      <div class="method-card">
+        <h2>Proportional Frame Allocation</h2>
+        <p>
+          The proportional frame allocation technique assigns frames based on
+          the size needed for execution and the total number of frames in
+          memory.
+        </p>
+
+        <p>
+          The allocated frames for a process <b>pi</b> of size <b>si</b> are:
+        </p>
+        <div class="formula">ai = (si/S) × m</div>
+        <p>
+          In which <b>S</b> represents the total of all process sizes, and
+          <b>m</b> represents the number of frames in the system.
+        </p>
+        <div class="advantage">
+          <h3>Advantages</h3>
+          <p>
+            Allocates frames based on process size, improves efficiency, optimizes memory use, reduces page faults, fair resource distribution, better large-process support, dynamic allocation.
+          </p>
+        </div>
+        <div class="disadvantage">
+          <h3>Disadvantage</h3>
+          <p>
+            The only drawback of this algorithm is that it doesn't allocate
+            frames based on priority. Priority frame allocation solves this
+            problem.
+          </p>
+        </div>
+      </div>
+
+      <div class="method-card">
+        <h2>Priority Frame Allocation</h2>
+        <p>
+          Priority frame allocation assigns frames based on the number of frame
+          allocations and the processes. Suppose a process has a high priority
+          and requires more frames that many frames will be allocated to it.
+          Following that, lesser priority processes are allocated.
+        </p>
+        <div class="advantage">
+          <h3>Advantages</h3>
+          <p>
+            Gives critical processes more memory, reduces response time for important tasks, improves system control, ensures service quality, supports real-time requirements.</p>
+        </div>
+        <div class="disadvantage">
+          <h3>Disadvantages</h3>
+          <p>
+            Low-priority processes may starve, unfair allocation, risk of resource hogging, difficult priority tuning, reduced fairness, complex management, priority inversion issues.</p>
+        </div>
+      </div>
+
+      <div class="method-card">
+        <h2>*Global Replacement</h2>
+        <p>
+          When a process requires a page that isn't currently in memory, it may
+          put it in and select a frame from the all frames sets, even if another
+          process is already utilizing that frame. In other words, one process
+          may take a frame from another.
+        </p>
+
+        <div class="advantage">
+          <h3>Advantages</h3>
+          <p>
+            Process performance is not hampered, resulting in higher system
+            throughput.
+          </p>
+        </div>
+
+        <div class="disadvantage">
+          <h3>Disadvantages</h3>
+          <p>
+            The process itself may not solely control the page fault ratio of a
+            process. The paging behavior of other processes also influences the
+            number of pages in memory for a process.
+          </p>
+        </div>
+      </div>
+
+      <div class="method-card">
+        <h2>*Local Replacement</h2>
+        <p>
+          When a process requires a page that isn't already in memory, it can
+          bring it in and assign it a frame from its set of allocated frames.
+        </p>
+
+        <div class="advantage">
+          <h3>Advantages</h3>
+          <p>
+            The paging behavior of a specific process has an effect on the pages
+            in memory and the page fault ratio.
+          </p>
+        </div>
+
+        <div class="disadvantage">
+          <h3>Disadvantages</h3>
+          <p>
+            A low priority process may obstruct a high priority process by
+            refusing to share its frames.
+          </p>
+        </div>
+      </div>
+
+      <div class="method-card">
+        <h2>Global Vs. Local Replacement</h2>
+        <p>
+          The number of frames assigned to a process does not change using a
+          local replacement strategy. On the other hand, using global
+          replacement, a process can choose only frames granted to other
+          processes and enhance the number of frames allocated.
+        </p>
+
+        <table class="comparison-table">
+          <tr>
+            <th>Feature</th>
+            <th>Global Replacement</th>
+            <th>Local Replacement</th>
+          </tr>
+          <tr>
+            <td>Frame Selection</td>
+            <td>Can select from all frames in the system</td>
+            <td>Can only select from its own allocated frames</td>
+          </tr>
+          <tr>
+            <td>Frame Count</td>
+            <td>Can increase over time</td>
+            <td>Remains fixed</td>
+          </tr>
+          <tr>
+            <td>Process Performance</td>
+            <td>Not hampered, higher throughput</td>
+            <td>May be limited by fixed allocation</td>
+          </tr>
+          <tr>
+            <td>Control of Page Fault Ratio</td>
+            <td>Influenced by other processes</td>
+            <td>Under process's own control</td>
+          </tr>
+          <tr>
+            <td>Process Interaction</td>
+            <td>Processes can affect each other</td>
+            <td>Processes are isolated</td>
+          </tr>
+          <tr>
+            <td>Priority Handling</td>
+            <td>High priority processes can take frames as needed</td>
+            <td>Low priority processes can refuse to share frames</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>
