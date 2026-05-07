@@ -127,7 +127,7 @@ input:focus { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glo
 
 /* Buttons */
 .button-group { display: flex; gap: 12px; }
-button { font-weight: 600; transition: 0.3s; }
+button { font-weight: 600; transition: 0.3s; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; }
 
 .btn-primary { background: var(--accent); color: #0f172a; }
 .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
@@ -167,6 +167,13 @@ button { font-weight: 600; transition: 0.3s; }
 }
 
 /* Agents (Circles) */
+.agents {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
 .agent {
     width: 55px; height: 55px;
     border-radius: 50%;
@@ -182,7 +189,19 @@ button { font-weight: 600; transition: 0.3s; }
 .producer, .reader { background: var(--producer-color); color: #0f172a; }
 .consumer, .writer { background: var(--consumer-color); }
 
-/* Readers Writers Specifics */
+/* Readers Writers Specific Fix */
+.agents-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    gap: 30px;
+}
+
+.agents-row .agent-group {
+    flex: 1;
+    text-align: center;
+}
+
 .resource {
     width: 200px; height: 100px;
     background: var(--side-bg);
@@ -236,6 +255,13 @@ button { font-weight: 600; transition: 0.3s; }
 }
 
 /* Status Labels */
+.status-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
 .philosopher-status {
     padding: 12px;
     background: var(--side-bg);
