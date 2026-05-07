@@ -218,6 +218,24 @@
     margin-bottom: 25px;
   }
 
+  .sequence-container h2 {
+    color: var(--text-main);
+    font-size: 1rem;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-left: 4px solid var(--accent);
+    padding-left: 10px;
+  }
+
+  .sequence-inputs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+  }
+
   .sequence-inputs input {
     background: var(--side-bg);
     border: 1px solid var(--accent);
@@ -263,6 +281,22 @@
   #p1, #p2, #p3, #p4, #p5 {
     color: white !important;
     text-align: center;
+  }
+
+  /* resource-input-container layout */
+  .resource-input-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  .resource-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
   }
 </style>
   </head>
@@ -512,167 +546,249 @@
     </footer>
 
     <script>
-        // Original script logic preserved
-        function validation(){
-          var a = document.getElementById('resourceA').value;
-          var b = document.getElementById('resourceB').value;
-          var c = document.getElementById('resourceC').value;
-          if( a=='' || a<0 || b=='' || b<0 || c=='' || c<0){
-            alert("Resource instance value can't be negative or blank");
-          }
-          for(var i=1; i<=5; i++){
-            for(var j=1; j<=3; j++){
-              if(document.getElementById('a'+i+j).value<0 || document.getElementById('a'+i+j).value==''){
-                alert("Allocation matrix elements can't be negative or blank");
-              }
-              if(document.getElementById('m'+i+j).value<0 || document.getElementById('m'+i+j).value==''){
-                alert("Max matrix elements can't be negative or blank");
-              }
+      // ── helpers ──────────────────────────────────────────────────────────────
+
+      function getVal(id) {
+        return parseInt(document.getElementById(id).value) || 0;
+      }
+
+      function clearCalc() {
+        for (var i = 0; i <= 5; i++) {
+          document.getElementById('calc' + i).innerHTML = '';
+        }
+      }
+
+      // Returns false and shows alert if any required field is missing/invalid
+      function validate() {
+        var a = document.getElementById('resourceA').value.trim();
+        var b = document.getElementById('resourceB').value.trim();
+        var c = document.getElementById('resourceC').value.trim();
+
+        if (a === '' || isNaN(+a) || +a < 0 ||
+            b === '' || isNaN(+b) || +b < 0 ||
+            c === '' || isNaN(+c) || +c < 0) {
+          alert("Resource instance value can't be negative or blank.");
+          return false;
+        }
+
+        for (var i = 1; i <= 5; i++) {
+          for (var j = 1; j <= 3; j++) {
+            var av = document.getElementById('a' + i + j).value.trim();
+            var mv = document.getElementById('m' + i + j).value.trim();
+            if (av === '' || isNaN(+av) || +av < 0) {
+              alert('Allocation matrix elements can\'t be negative or blank (P' + i + ' column ' + j + ').');
+              return false;
             }
-            document.getElementById('calc'+i).innerHTML = '';
-          }
-          document.getElementById('calc0').innerHTML = '';
-        }
-
-
-        function reset(){
-          document.getElementById('resourceA').value = '';
-          document.getElementById('resourceB').value = '';
-          document.getElementById('resourceC').value = '';
-          for(var i=1; i<=5; i++){
-            for(var j=1; j<=3; j++){
-              document.getElementById('a'+i+j).value='';
-              document.getElementById('m'+i+j).value='';
-              document.getElementById('n'+i+j).value='';
-            }
-            document.getElementById('p'+i).value = ''
-            document.getElementById('calc'+i).innerHTML = '';
-          }
-          document.getElementById('av11').value = '';
-          document.getElementById('av12').value = '';
-          document.getElementById('av13').value = '';
-          document.getElementById('calc0').innerHTML = '';
-        }
-
-        function sample(){
-          sam = [[0,1,0],
-                [2,0,0],
-                [3,0,2],
-                [2,1,1],
-                [0,0,2]];
-
-          max = [[7,5,3],
-                [3,2,2],
-                [9,0,2],
-                [2,2,2],
-                [4,3,3]];
-          for(var i=1; i<=5; i++){
-            for(var j=1; j<=3; j++){
-              document.getElementById('a'+i+j).value = sam[i-1][j-1];
-              document.getElementById('m'+i+j).value = max[i-1][j-1];
-            }
-          }
-          document.getElementById('resourceA').value = 10;
-          document.getElementById('resourceB').value = 5;
-          document.getElementById('resourceC').value = 7;
-          document.getElementById('calc0').innerHTML = '<div class="alert alert-success">Sample data loaded successfully!</div>';
-        }
-
-        function find_avai(){
-          var a = document.getElementById('resourceA').value;
-          var b = document.getElementById('resourceB').value;
-          var c = document.getElementById('resourceC').value;
-          var x = 0;
-          var y = 0;
-          var z = 0;
-          document.getElementById('calc1').innerHTML = '<strong>Calculating the Available Matrix:</strong><br>Available[n] = Total instances - (Allocation[0][n] + Allocation[1][n] + Allocation[2][n] + Allocation[3][n] + Allocation[4][n])<br>';
-          document.getElementById('calc1').innerHTML += 'Available[0] = '+a+' - ';
-          document.getElementById('calc2').innerHTML = 'Available[1] = '+b+' - ';
-          document.getElementById('calc3').innerHTML = 'Available[2] = '+c+' - ';
-          for(var i=1; i<=5; i++){
-              var x = x + parseInt(document.getElementById('a'+i+'1').value);
-              document.getElementById('calc1').innerHTML += parseInt(document.getElementById('a'+i+'1').value); if(i<5){document.getElementById('calc1').innerHTML += '+';}else{document.getElementById('calc1').innerHTML += ' = '}
-              var y = y + parseInt(document.getElementById('a'+i+'2').value);
-              document.getElementById('calc2').innerHTML += parseInt(document.getElementById('a'+i+'2').value); if(i<5){document.getElementById('calc2').innerHTML += '+';}else{document.getElementById('calc2').innerHTML += ' = '}
-              var z = z + parseInt(document.getElementById('a'+i+'3').value);
-              document.getElementById('calc3').innerHTML += parseInt(document.getElementById('a'+i+'3').value); if(i<5){document.getElementById('calc3').innerHTML += '+';}else{document.getElementById('calc3').innerHTML += ' = '}
-          }
-          document.getElementById('av11').value = a-x;
-          document.getElementById('calc1').innerHTML += a-x;
-          document.getElementById('av12').value = b-y;
-          document.getElementById('calc2').innerHTML += b-y;
-          document.getElementById('av13').value = c-z;
-          document.getElementById('calc3').innerHTML += c-z;
-          document.getElementById('calc4').innerHTML = '';
-          document.getElementById('calc5').innerHTML = '';
-          document.getElementById('calc0').innerHTML = '';
-          validation();
-        }
-
-        function find_need(){
-          document.getElementById('calc1').innerHTML = '<strong>Calculating the Need Matrix:</strong><br>Need[n][n] = Max[n][n] - Allocation[n][n]<br>';
-          document.getElementById('calc2').innerHTML = '';
-          document.getElementById('calc3').innerHTML = '';
-          document.getElementById('calc4').innerHTML = '';
-          document.getElementById('calc5').innerHTML = '';
-          document.getElementById('calc0').innerHTML = '';
-          for(var i=1; i<=5; i++){
-            for(var j=1; j<=3; j++){
-              document.getElementById('n'+i+j).value = parseInt(document.getElementById('m'+i+j).value) - parseInt(document.getElementById('a'+i+j).value);
-              document.getElementById('calc'+i).innerHTML += 'Need['+(i-1)+']'+'['+(j-1)+']'+' = '+document.getElementById('m'+i+j).value + ' - ' + document.getElementById('a'+i+j).value+' = '+document.getElementById('n'+i+j).value+'&nbsp;&nbsp;&nbsp;';
+            if (mv === '' || isNaN(+mv) || +mv < 0) {
+              alert('Max matrix elements can\'t be negative or blank (P' + i + ' column ' + j + ').');
+              return false;
             }
           }
         }
+        return true;
+      }
 
+      // ── reset ────────────────────────────────────────────────────────────────
 
-        function find_sequence(){
-          var dp = 0;
-          var checker = 0;
-          var q = 1;
-          var k=1;
-          document.getElementById('calc0').innerHTML = '<strong>Calculating the Safe Process Sequence:</strong><br>';
-          for(var j=1; j<=5; j++){
-            x1 = parseInt(document.getElementById('av11').value);
-            x2 = parseInt(document.getElementById('av12').value);
-            x3 = parseInt(document.getElementById('av13').value);
-            document.getElementById('calc'+j).innerHTML = '<strong>Step '+j+':</strong> Available Matrix = ('+x1+', '+x2+', '+x3+')';
-            for(var i=k; i<=5; i++){
-              var ex1 = parseInt(document.getElementById('a'+i+'1').value);
-              var ex2 = parseInt(document.getElementById('a'+i+'2').value);
-              var ex3 = parseInt(document.getElementById('a'+i+'3').value);
-              if(ex1!= 0 || ex2!= 0 || ex3!= 0){
-                if(x1 >= parseInt(document.getElementById('n'+i+'1').value) && x2 >= parseInt(document.getElementById('n'+i+'2').value) && x3 >= parseInt(document.getElementById('n'+i+'3').value)){
-                  document.getElementById('p'+q).value = 'P'+i;
-                  document.getElementById('calc'+j).innerHTML += '<br>Need['+(i)+'] = ('+document.getElementById('n'+i+'1').value+', '+document.getElementById('n'+i+'2').value+', '
-                  +document.getElementById('n'+i+'3').value+') <= Available = ('+x1+', '+x2+', '+x3
-                  +') → Process P'+i+' is selected.<br>New Available = ('+document.getElementById('av11').value+', '+document.getElementById('av12').value+', '+document.getElementById('av13').value+') + ('+document.getElementById('a'+i+'1').value+', '+document.getElementById('a'+i+'2').value+', '
-                  +document.getElementById('a'+i+'3').value+') = ';
-                  document.getElementById('av11').value = parseInt(document.getElementById('av11').value) + parseInt(document.getElementById('a'+i+'1').value);
-                  document.getElementById('av12').value = parseInt(document.getElementById('av12').value) + parseInt(document.getElementById('a'+i+'2').value);
-                  document.getElementById('av13').value = parseInt(document.getElementById('av13').value) + parseInt(document.getElementById('a'+i+'3').value);
-                  document.getElementById('calc'+j).innerHTML += '('+document.getElementById('av11').value+', '+document.getElementById('av12').value+', '+document.getElementById('av13').value+')';
-                  document.getElementById('a'+i+'1').value = '0';
-                  document.getElementById('a'+i+'2').value = '0';
-                  document.getElementById('a'+i+'3').value = '0';
-                  k=i+1;
-                  if (k==6){
-                    k=1;
-                  }
-                  q = q + 1;
-                  checker = checker + 1;
-                  break;
-                }
-                else{
-                  dp = i;
-                }
-              }
-            }
+      function reset() {
+        document.getElementById('resourceA').value = '';
+        document.getElementById('resourceB').value = '';
+        document.getElementById('resourceC').value = '';
+
+        for (var i = 1; i <= 5; i++) {
+          for (var j = 1; j <= 3; j++) {
+            document.getElementById('a' + i + j).value = '';
+            document.getElementById('m' + i + j).value = '';
+            document.getElementById('n' + i + j).value = '';
           }
-          if(checker == 0){
-            alert("Deadlock detected! The system is in an unsafe state.");
-            reset();
+          document.getElementById('p' + i).value = '';
+        }
+        document.getElementById('av11').value = '';
+        document.getElementById('av12').value = '';
+        document.getElementById('av13').value = '';
+        clearCalc();
+      }
+
+      // ── sample data ──────────────────────────────────────────────────────────
+
+      function sample() {
+        var sam = [[0,1,0],[2,0,0],[3,0,2],[2,1,1],[0,0,2]];
+        var max = [[7,5,3],[3,2,2],[9,0,2],[2,2,2],[4,3,3]];
+
+        for (var i = 1; i <= 5; i++) {
+          for (var j = 1; j <= 3; j++) {
+            document.getElementById('a' + i + j).value = sam[i-1][j-1];
+            document.getElementById('m' + i + j).value = max[i-1][j-1];
           }
         }
+        document.getElementById('resourceA').value = 10;
+        document.getElementById('resourceB').value = 5;
+        document.getElementById('resourceC').value = 7;
+        clearCalc();
+        document.getElementById('calc0').innerHTML =
+          '<span class="alert-success">Sample data loaded successfully!</span>';
+      }
+
+      // ── find available ───────────────────────────────────────────────────────
+
+      function find_avai() {
+        if (!validate()) return;
+        clearCalc();
+
+        var a = parseInt(document.getElementById('resourceA').value);
+        var b = parseInt(document.getElementById('resourceB').value);
+        var c = parseInt(document.getElementById('resourceC').value);
+        var x = 0, y = 0, z = 0;
+
+        document.getElementById('calc1').innerHTML =
+          '<strong>Calculating the Available Matrix:</strong><br>' +
+          'Available[n] = Total instances - (Allocation[0][n] + ... + Allocation[4][n])<br>' +
+          'Available[A] = ' + a + ' - ';
+        document.getElementById('calc2').innerHTML = 'Available[B] = ' + b + ' - ';
+        document.getElementById('calc3').innerHTML = 'Available[C] = ' + c + ' - ';
+
+        for (var i = 1; i <= 5; i++) {
+          x += getVal('a' + i + '1');
+          y += getVal('a' + i + '2');
+          z += getVal('a' + i + '3');
+
+          document.getElementById('calc1').innerHTML += getVal('a' + i + '1') + (i < 5 ? '+' : ' = ');
+          document.getElementById('calc2').innerHTML += getVal('a' + i + '2') + (i < 5 ? '+' : ' = ');
+          document.getElementById('calc3').innerHTML += getVal('a' + i + '3') + (i < 5 ? '+' : ' = ');
+        }
+
+        document.getElementById('av11').value = a - x;
+        document.getElementById('av12').value = b - y;
+        document.getElementById('av13').value = c - z;
+        document.getElementById('calc1').innerHTML += (a - x);
+        document.getElementById('calc2').innerHTML += (b - y);
+        document.getElementById('calc3').innerHTML += (c - z);
+      }
+
+      // ── find need ────────────────────────────────────────────────────────────
+
+      function find_need() {
+        if (!validate()) return;
+        clearCalc();
+
+        document.getElementById('calc0').innerHTML =
+          '<strong>Calculating the Need Matrix:</strong><br>' +
+          'Need[i][j] = Max[i][j] - Allocation[i][j]<br>';
+
+        for (var i = 1; i <= 5; i++) {
+          var line = '';
+          for (var j = 1; j <= 3; j++) {
+            var m = getVal('m' + i + j);
+            var al = getVal('a' + i + j);
+            var need = m - al;
+            document.getElementById('n' + i + j).value = need;
+            line += 'Need[' + (i) + '][' + j + '] = ' + m + ' - ' + al + ' = ' + need + '&nbsp;&nbsp;&nbsp;';
+          }
+          document.getElementById('calc' + i).innerHTML = line;
+        }
+      }
+
+      // ── find sequence (Banker's Algorithm – fully correct) ───────────────────
+
+      function find_sequence() {
+        // Need matrix must be computed first
+        var needFilled = true;
+        for (var i = 1; i <= 5; i++) {
+          for (var j = 1; j <= 3; j++) {
+            if (document.getElementById('n' + i + j).value === '') {
+              needFilled = false;
+              break;
+            }
+          }
+        }
+        if (!needFilled) {
+          alert('Please click "Find Need" before finding the process sequence.');
+          return;
+        }
+
+        var avA = getVal('av11');
+        var avB = getVal('av12');
+        var avC = getVal('av13');
+
+        if (document.getElementById('av11').value === '') {
+          alert('Please click "Find Available" before finding the process sequence.');
+          return;
+        }
+
+        // Read need and allocation into local arrays (don't mutate the DOM inputs)
+        var need = [], alloc = [];
+        for (var i = 1; i <= 5; i++) {
+          need.push([getVal('n' + i + '1'), getVal('n' + i + '2'), getVal('n' + i + '3')]);
+          alloc.push([getVal('a' + i + '1'), getVal('a' + i + '2'), getVal('a' + i + '3')]);
+        }
+
+        // Work array (available copy)
+        var work = [avA, avB, avC];
+        var finished = [false, false, false, false, false];
+        var safeSeq = [];
+        var stepLogs = [];
+
+        // Banker's safety algorithm: repeatedly scan for a process whose need ≤ work
+        var found = true;
+        while (found) {
+          found = false;
+          for (var i = 0; i < 5; i++) {
+            if (!finished[i] &&
+                need[i][0] <= work[0] &&
+                need[i][1] <= work[1] &&
+                need[i][2] <= work[2]) {
+
+              var oldWork = work.slice();
+              work[0] += alloc[i][0];
+              work[1] += alloc[i][1];
+              work[2] += alloc[i][2];
+              finished[i] = true;
+              safeSeq.push(i + 1); // 1-based process number
+
+              stepLogs.push(
+                '<strong>Step ' + safeSeq.length + ':</strong> ' +
+                'Work = (' + oldWork.join(', ') + ')&nbsp;&nbsp;' +
+                'Need[P' + (i+1) + '] = (' + need[i].join(', ') + ') ≤ Work<br>' +
+                '→ P' + (i+1) + ' selected. ' +
+                'New Work = (' + oldWork.join(', ') + ') + (' + alloc[i].join(', ') + ') = (' + work.join(', ') + ')'
+              );
+
+              found = true;
+              break; // restart scan from P1
+            }
+          }
+        }
+
+        clearCalc();
+
+        if (safeSeq.length === 5) {
+          // Safe state found
+          document.getElementById('calc0').innerHTML =
+            '<strong>Calculating the Safe Process Sequence:</strong><br>' +
+            'Initial Available = (' + [avA, avB, avC].join(', ') + ')<br>';
+
+          for (var s = 0; s < stepLogs.length; s++) {
+            document.getElementById('calc' + (s + 1)).innerHTML = stepLogs[s];
+          }
+
+          for (var q = 0; q < safeSeq.length; q++) {
+            document.getElementById('p' + (q + 1)).value = 'P' + safeSeq[q];
+          }
+        } else {
+          // Unsafe state – deadlock
+          document.getElementById('calc0').innerHTML =
+            '<span style="color:var(--danger);font-weight:bold;">' +
+            '⚠ Deadlock detected! The system is in an unsafe state.<br>' +
+            'Processes that could not be scheduled: ' +
+            finished.map(function(f, idx) { return f ? null : 'P' + (idx + 1); })
+                    .filter(Boolean).join(', ') +
+            '</span>';
+
+          for (var q = 0; q < 5; q++) {
+            document.getElementById('p' + (q + 1)).value = '';
+          }
+        }
+      }
     </script>
   </body>
 </html>
