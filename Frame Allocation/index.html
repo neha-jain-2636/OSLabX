@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frame Allocation Simulator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header-card">
+            <h1>File Allocation Strategies</h1>
+        </div>
+        
+        <div class="control-panel">
+            <div class="input-section">
+                <h2>System Configuration</h2>
+                <div class="input-group">
+                    <label for="total-frames">Total Frames:</label>
+                    <input type="number" id="total-frames" min="1" value="20">
+                </div>
+                <div class="input-group">
+                    <label for="process-count">Number of Processes:</label>
+                    <input type="number" id="process-count" min="1" max="10" value="3">
+                    <button id="generate-processes">Generate</button>
+                </div>
+            </div>
+            
+            <div class="algorithm-section">
+                <h2>Select Algorithm</h2>
+                <select id="algorithm-select">
+                    <option value="equal">Equal Allocation</option>
+                    <option value="proportional">Proportional Allocation</option>
+                    <option value="priority">Priority Allocation</option>
+                </select>
+                <button id="simulate-btn">Simulate</button>
+            </div>
+            <div class="process-inputs" id="process-inputs">
+                <!-- Process inputs will be generated here -->
+            </div>
+            
+        </div>
+        
+        <div class="results-section">
+            <h2>Simulation Results</h2>
+            <div class="algorithm-description" id="algorithm-description">
+                <!-- Algorithm description will be displayed here -->
+            </div>
+            <div class="allocation-results" id="allocation-results">
+                <!-- Allocation results will be displayed here -->
+            </div>
+            <div class="visualization" id="visualization">
+                <!-- Frame allocation visualization will be displayed here -->
+            </div>
+        </div>
+        
+        <div class="performance-metrics" id="performance-metrics">
+            <!-- Performance metrics will be displayed here -->
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
