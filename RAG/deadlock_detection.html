@@ -148,7 +148,7 @@
   .button {
     padding: 14px 30px;
     background-color: var(--accent);
-    color: #0f172a !important; /* Force dark text on light button */
+    color: #0f172a !important;
     border: none;
     font-weight: 700;
     margin-top: 30px;
@@ -362,154 +362,187 @@
 
   <script>
     function detectDeadlock() {
-      const output = document.getElementById("output");
+      var output = document.getElementById("output");
       output.innerHTML = "";
-      const graph = document.getElementById("ragGraph");
-      graph.classList.add("hidden");
+      document.getElementById("ragGraph").classList.add("hidden");
 
-      const available = document.getElementById("available").value.trim().split(/\s+/).map(Number);
-      const allocRows = document.querySelectorAll("#allocTable tbody tr");
-      const requestRows = document.querySelectorAll("#requestTable tbody tr");
+      // ── parse available ──────────────────────────────────────────────────────
+      var availRaw = document.getElementById("available").value.trim();
+      if (!availRaw) {
+        output.innerHTML = '<div class="error">⚠ Please enter available resources.</div>';
+        return;
+      }
+      var available = availRaw.split(/\s+/).map(Number);
+      if (available.some(isNaN)) {
+        output.innerHTML = '<div class="error">⚠ Available resources must be numbers.</div>';
+        return;
+      }
 
-      const alloc = Array.from(allocRows, row =>
-        Array.from(row.querySelectorAll("input"), input => Number(input.value) || 0)
-      );
-      const request = Array.from(requestRows, row =>
-        Array.from(row.querySelectorAll("input"), input => Number(input.value) || 0)
-      );
+      // ── read matrices ────────────────────────────────────────────────────────
+      var allocRows   = document.querySelectorAll("#allocTable tbody tr");
+      var requestRows = document.querySelectorAll("#requestTable tbody tr");
 
-      const n = alloc.length;
-      const m = available.length;
-      const completed = Array(n).fill(false);
-      let done = 0;
-      let safeSequence = [];
+      var alloc   = Array.from(allocRows,   row => Array.from(row.querySelectorAll("input"), inp => Number(inp.value) || 0));
+      var request = Array.from(requestRows, row => Array.from(row.querySelectorAll("input"), inp => Number(inp.value) || 0));
 
-      let changed = true;
-      while (changed) {
-        changed = false;
-        for (let i = 0; i < n; i++) {
+      var n = alloc.length;
+      var m = available.length;
+
+      // Work on a copy of available so the original is preserved for the graph
+      var work      = available.slice();
+      var completed = Array(n).fill(false);
+      var safeSeq   = [];
+
+      // Detection algorithm (same as Banker's safety check)
+      var found = true;
+      while (found) {
+        found = false;
+        for (var i = 0; i < n; i++) {
           if (!completed[i]) {
-            let canProceed = true;
-            for (let j = 0; j < m; j++) {
-              if (request[i][j] > available[j]) {
-                canProceed = false;
-                break;
-              }
+            var canProceed = true;
+            for (var j = 0; j < m; j++) {
+              if (request[i][j] > work[j]) { canProceed = false; break; }
             }
             if (canProceed) {
-              for (let j = 0; j < m; j++) {
-                available[j] += alloc[i][j];
-              }
+              for (var j = 0; j < m; j++) work[j] += alloc[i][j];
               completed[i] = true;
-              safeSequence.push(`P${i}`);
-              changed = true;
-              done++;
+              safeSeq.push("P" + i);
+              found = true;
+              break; // restart scan
             }
           }
         }
       }
 
+      var done = completed.filter(Boolean).length;
+
       if (done === n) {
-        output.innerHTML = `<div class="success">✅ No Deadlock Detected.<br>Safe Sequence: ${safeSequence.join(" → ")}</div>`;
+        output.innerHTML =
+          '<div class="success">✅ No Deadlock Detected.<br>Safe Sequence: ' +
+          safeSeq.join(" → ") + '</div>';
       } else {
-        const deadlocked = completed.map((c, i) => !c ? `P${i}` : null).filter(Boolean);
-        output.innerHTML = `<div class="error">❌ Deadlock Detected!<br>Deadlocked Processes: ${deadlocked.join(", ")}</div>`;
+        var deadlocked = completed.map((c, i) => !c ? "P" + i : null).filter(Boolean);
+        output.innerHTML =
+          '<div class="error">❌ Deadlock Detected!<br>Deadlocked Processes: ' +
+          deadlocked.join(", ") + '</div>';
       }
 
+      // Pass the ORIGINAL available (not mutated) to the graph renderer
       renderRAGGraph(alloc, request, available, completed);
     }
 
-    function renderRAGGraph(alloc, request, available, completed) {
-      const graph = document.getElementById("ragGraph");
-      const status = document.getElementById("graphStatus");
-      const svg = document.getElementById("ragSvg");
-      const n = alloc.length;
-      const m = available.length;
+    function renderRAGGraph(alloc, request, originalAvailable, completed) {
+      var graph  = document.getElementById("ragGraph");
+      var status = document.getElementById("graphStatus");
+      var svg    = document.getElementById("ragSvg");
+      var n = alloc.length;
+      var m = originalAvailable.length;
 
       graph.classList.remove("hidden");
       svg.innerHTML = "";
 
-      const width = 760;
-      const height = 320;
-      const resY = 70;
-      const procY = 240;
-      const resSpacing = width / Math.max(m + 1, 1);
-      const procSpacing = width / Math.max(n + 1, 1);
+      var width      = 760;
+      var height     = 320;
+      var resY       = 70;
+      var procY      = 240;
+      var resSpacing  = width / (m + 1);
+      var procSpacing = width / (n + 1);
 
-      const resources = Array.from({ length: m }, (_, j) => ({
-        id: `R${j}`,
-        x: resSpacing * (j + 1),
-        y: resY
-      }));
+      var resources = Array.from({ length: m }, function(_, j) {
+        return { id: "R" + j, x: resSpacing * (j + 1), y: resY };
+      });
 
-      const processes = Array.from({ length: n }, (_, i) => ({
-        id: `P${i}`,
-        x: procSpacing * (i + 1),
-        y: procY,
-        active: !completed[i]
-      }));
+      var processes = Array.from({ length: n }, function(_, i) {
+        return { id: "P" + i, x: procSpacing * (i + 1), y: procY, active: !completed[i] };
+      });
 
-      const defs = `
-        <defs>
-          <marker id="allocArrow" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto" markerUnits="strokeWidth">
-            <path d="M0,0 L8,4 L0,8 Z" fill="#4ade80" />
-          </marker>
-          <marker id="reqArrow" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto" markerUnits="strokeWidth">
-            <path d="M0,0 L8,4 L0,8 Z" fill="#f97316" />
-          </marker>
-        </defs>
-      `;
+      var defs =
+        '<defs>' +
+          '<marker id="allocArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">' +
+            '<path d="M0,0 L8,4 L0,8 Z" fill="#4ade80" />' +
+          '</marker>' +
+          '<marker id="reqArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">' +
+            '<path d="M0,0 L8,4 L0,8 Z" fill="#f97316" />' +
+          '</marker>' +
+        '</defs>';
 
       svg.innerHTML += defs;
 
-      const lines = [];
+      // ── draw edges ───────────────────────────────────────────────────────────
+      var lines = [];
 
-      alloc.forEach((row, i) => {
-        row.forEach((val, j) => {
-          if (val > 0) {
-            const from = resources[j];
-            const to = processes[i];
-            lines.push(`<line x1="${from.x}" y1="${from.y + 22}" x2="${to.x}" y2="${to.y - 18}" class="graph-line alloc" />`);
+      // Allocation edges: resource → process
+      alloc.forEach(function(row, i) {
+        row.forEach(function(val, j) {
+          if (val > 0 && j < resources.length) {
+            var from = resources[j];
+            var to   = processes[i];
+            // Vector from resource to process, shorten to stop at node border
+            var dx = to.x - from.x;
+            var dy = (to.y - 24) - (from.y + 20); // approx node radii
+            var len = Math.sqrt(dx * dx + dy * dy);
+            var ux = dx / len, uy = dy / len;
+            var x1 = from.x + ux * 2;
+            var y1 = (from.y + 20) + uy * 2;
+            var x2 = to.x - ux * 26;
+            var y2 = (to.y - 24) - uy * 2;
+            lines.push(
+              '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 +
+              '" class="graph-line alloc" />'
+            );
           }
         });
       });
 
-      request.forEach((row, i) => {
-        row.forEach((val, j) => {
-          if (val > 0) {
-            const from = processes[i];
-            const to = resources[j];
-            lines.push(`<line x1="${from.x}" y1="${from.y - 22}" x2="${to.x}" y2="${to.y + 18}" class="graph-line req" />`);
+      // Request edges: process → resource
+      request.forEach(function(row, i) {
+        row.forEach(function(val, j) {
+          if (val > 0 && j < resources.length) {
+            var from = processes[i];
+            var to   = resources[j];
+            var dx = to.x - from.x;
+            var dy = (to.y + 20) - (from.y - 24);
+            var len = Math.sqrt(dx * dx + dy * dy);
+            var ux = dx / len, uy = dy / len;
+            var x1 = from.x + ux * 2;
+            var y1 = (from.y - 24) + uy * 2;
+            var x2 = to.x - ux * 2;
+            var y2 = (to.y + 20) - uy * 26;
+            lines.push(
+              '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 +
+              '" class="graph-line req" />'
+            );
           }
         });
       });
 
       svg.innerHTML += lines.join("");
 
-      resources.forEach(resource => {
-        svg.innerHTML += `
-          <g>
-            <rect x="${resource.x - 38}" y="${resource.y - 20}" width="76" height="40" rx="12" class="graph-node" />
-            <text x="${resource.x}" y="${resource.y + 4}" text-anchor="middle" class="graph-label">${resource.id}</text>
-          </g>
-        `;
+      // ── draw resource nodes (rectangles) ─────────────────────────────────────
+      resources.forEach(function(resource) {
+        svg.innerHTML +=
+          '<g>' +
+            '<rect x="' + (resource.x - 38) + '" y="' + (resource.y - 20) + '" width="76" height="40" rx="12" class="graph-node" />' +
+            '<text x="' + resource.x + '" y="' + (resource.y + 5) + '" text-anchor="middle" class="graph-label">' + resource.id + '</text>' +
+          '</g>';
       });
 
-      processes.forEach(process => {
-        const fill = process.active ? "rgba(248, 113, 113, 0.12)" : "rgba(74, 222, 128, 0.12)";
-        const stroke = process.active ? "#f87171" : "#4ade80";
-        svg.innerHTML += `
-          <g>
-            <circle cx="${process.x}" cy="${process.y}" r="24" fill="${fill}" stroke="${stroke}" stroke-width="2" />
-            <text x="${process.x}" y="${process.y + 5}" text-anchor="middle" class="graph-label">${process.id}</text>
-          </g>
-        `;
+      // ── draw process nodes (circles) ─────────────────────────────────────────
+      processes.forEach(function(process) {
+        var fill   = process.active ? "rgba(248,113,113,0.12)" : "rgba(74,222,128,0.12)";
+        var stroke = process.active ? "#f87171" : "#4ade80";
+        svg.innerHTML +=
+          '<g>' +
+            '<circle cx="' + process.x + '" cy="' + process.y + '" r="24" fill="' + fill + '" stroke="' + stroke + '" stroke-width="2" />' +
+            '<text x="' + process.x + '" y="' + (process.y + 5) + '" text-anchor="middle" class="graph-label">' + process.id + '</text>' +
+          '</g>';
       });
 
-      const deadlocked = completed.map((c, i) => !c ? `P${i}` : null).filter(Boolean);
+      // ── status text ──────────────────────────────────────────────────────────
+      var deadlocked = completed.map(function(c, i) { return !c ? "P" + i : null; }).filter(Boolean);
       status.innerHTML = deadlocked.length > 0
-        ? `<strong>Deadlock graph:</strong> ${deadlocked.join(", ")} are blocked in the graph above.`
-        : `<strong>No deadlock:</strong> All processes can finish. Allocation and request edges are shown above.`;
+        ? '<strong>Deadlock graph:</strong> ' + deadlocked.join(", ") + ' are blocked (red circles). Orange edges = pending requests; green edges = held allocations.'
+        : '<strong>No deadlock:</strong> All processes can finish. Green circles = completed processes.';
     }
   </script>
 
