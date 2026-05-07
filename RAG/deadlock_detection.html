@@ -163,6 +163,102 @@
     box-shadow: 0 5px 15px var(--accent-glow);
   }
 
+  .hidden {
+    display: none !important;
+  }
+
+  .rag-graph {
+    margin-top: 30px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    padding: 24px;
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+  }
+
+  .rag-graph h2 {
+    margin: 0 0 16px;
+    color: var(--accent);
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  .graph-status {
+    margin-bottom: 16px;
+    color: var(--text-main);
+    font-size: 0.95rem;
+  }
+
+  .graph-status strong {
+    color: var(--accent);
+  }
+
+  .graph-svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .graph-node {
+    fill: #0f172a;
+    stroke: #38bdf8;
+    stroke-width: 2;
+  }
+
+  .graph-label {
+    fill: var(--text-main);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .graph-line.alloc {
+    stroke: #4ade80;
+    stroke-width: 2;
+    marker-end: url(#allocArrow);
+  }
+
+  .graph-line.req {
+    stroke: #f97316;
+    stroke-width: 2;
+    marker-end: url(#reqArrow);
+  }
+
+  .legend {
+    display: flex;
+    gap: 18px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  .legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+  }
+
+  .legend-dot.alloc {
+    background: #4ade80;
+    border-color: #4ade80;
+  }
+
+  .legend-dot.req {
+    background: #f97316;
+    border-color: #f97316;
+  }
+
   .output {
     margin-top: 30px;
     padding: 20px;
@@ -250,12 +346,24 @@
 
   <button class="button" onclick="detectDeadlock()">Check for Deadlock</button>
 
+  <div class="rag-graph hidden" id="ragGraph">
+    <h2>Resource Allocation Graph</h2>
+    <div class="graph-status" id="graphStatus">Graph will appear here after simulation.</div>
+    <svg id="ragSvg" class="graph-svg" viewBox="0 0 760 320" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="legend">
+      <span><span class="legend-dot alloc"></span>Allocation edge (resource → process)</span>
+      <span><span class="legend-dot req"></span>Request edge (process → resource)</span>
+    </div>
+  </div>
+
   <div class="output" id="output"></div>
 
   <script>
     function detectDeadlock() {
       const output = document.getElementById("output");
       output.innerHTML = "";
+      const graph = document.getElementById("ragGraph");
+      graph.classList.add("hidden");
 
       const available = document.getElementById("available").value.trim().split(/\s+/).map(Number);
       const allocRows = document.querySelectorAll("#allocTable tbody tr");
@@ -305,6 +413,101 @@
         const deadlocked = completed.map((c, i) => !c ? `P${i}` : null).filter(Boolean);
         output.innerHTML = `<div class="error">❌ Deadlock Detected!<br>Deadlocked Processes: ${deadlocked.join(", ")}</div>`;
       }
+
+      renderRAGGraph(alloc, request, available, completed);
+    }
+
+    function renderRAGGraph(alloc, request, available, completed) {
+      const graph = document.getElementById("ragGraph");
+      const status = document.getElementById("graphStatus");
+      const svg = document.getElementById("ragSvg");
+      const n = alloc.length;
+      const m = available.length;
+
+      graph.classList.remove("hidden");
+      svg.innerHTML = "";
+
+      const width = 760;
+      const height = 320;
+      const resY = 70;
+      const procY = 240;
+      const resSpacing = width / Math.max(m + 1, 1);
+      const procSpacing = width / Math.max(n + 1, 1);
+
+      const resources = Array.from({ length: m }, (_, j) => ({
+        id: `R${j}`,
+        x: resSpacing * (j + 1),
+        y: resY
+      }));
+
+      const processes = Array.from({ length: n }, (_, i) => ({
+        id: `P${i}`,
+        x: procSpacing * (i + 1),
+        y: procY,
+        active: !completed[i]
+      }));
+
+      const defs = `
+        <defs>
+          <marker id="allocArrow" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L8,4 L0,8 Z" fill="#4ade80" />
+          </marker>
+          <marker id="reqArrow" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L8,4 L0,8 Z" fill="#f97316" />
+          </marker>
+        </defs>
+      `;
+
+      svg.innerHTML += defs;
+
+      const lines = [];
+
+      alloc.forEach((row, i) => {
+        row.forEach((val, j) => {
+          if (val > 0) {
+            const from = resources[j];
+            const to = processes[i];
+            lines.push(`<line x1="${from.x}" y1="${from.y + 22}" x2="${to.x}" y2="${to.y - 18}" class="graph-line alloc" />`);
+          }
+        });
+      });
+
+      request.forEach((row, i) => {
+        row.forEach((val, j) => {
+          if (val > 0) {
+            const from = processes[i];
+            const to = resources[j];
+            lines.push(`<line x1="${from.x}" y1="${from.y - 22}" x2="${to.x}" y2="${to.y + 18}" class="graph-line req" />`);
+          }
+        });
+      });
+
+      svg.innerHTML += lines.join("");
+
+      resources.forEach(resource => {
+        svg.innerHTML += `
+          <g>
+            <rect x="${resource.x - 38}" y="${resource.y - 20}" width="76" height="40" rx="12" class="graph-node" />
+            <text x="${resource.x}" y="${resource.y + 4}" text-anchor="middle" class="graph-label">${resource.id}</text>
+          </g>
+        `;
+      });
+
+      processes.forEach(process => {
+        const fill = process.active ? "rgba(248, 113, 113, 0.12)" : "rgba(74, 222, 128, 0.12)";
+        const stroke = process.active ? "#f87171" : "#4ade80";
+        svg.innerHTML += `
+          <g>
+            <circle cx="${process.x}" cy="${process.y}" r="24" fill="${fill}" stroke="${stroke}" stroke-width="2" />
+            <text x="${process.x}" y="${process.y + 5}" text-anchor="middle" class="graph-label">${process.id}</text>
+          </g>
+        `;
+      });
+
+      const deadlocked = completed.map((c, i) => !c ? `P${i}` : null).filter(Boolean);
+      status.innerHTML = deadlocked.length > 0
+        ? `<strong>Deadlock graph:</strong> ${deadlocked.join(", ")} are blocked in the graph above.`
+        : `<strong>No deadlock:</strong> All processes can finish. Allocation and request edges are shown above.`;
     }
   </script>
 
