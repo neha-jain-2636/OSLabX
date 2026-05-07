@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Allocation Visualizer - MFT & MVT</title>
+    <link rel="stylesheet" href="../global.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    
+  <div class="osx-nav">
+    <a href="../index.html" class="osx-nav-back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to OSLabX
+    </a>
+    <a href="../index.html" class="osx-brand">
+      <span class="osx-brand-dot"></span> OSLabX
+    </a>
+  </div>
+  
+<div class="container">
+        <h1>Memory Allocation Techniques Visualizer</h1>
+        
+        <div class="explanation">
+            <h3>Memory Allocation in Operating Systems</h3>
+            <p>Memory management is a critical aspect of operating systems that involves allocating and deallocating memory space to various processes. Two common memory allocation techniques are:</p>
+            <ul>
+                <li><strong>MFT (Multiprogramming with Fixed Tasks)</strong>: Memory is divided into fixed-size partitions.</li>
+                <li><strong>MVT (Multiprogramming with Variable Tasks)</strong>: Memory is allocated dynamically based on process requirements.</li>
+            </ul>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab('mft-tab')">MFT</button>
+            <button class="tab-button" onclick="openTab('mvt-tab')">MVT</button>
+            <button class="tab-button" onclick="openTab('comparison-tab')">Comparison</button>
+        </div>
+        
+        <!-- MFT Tab Content -->
+        <div id="mft-tab" class="tab-content active">
+            <h2>Fixed Partitioning (MFT)</h2>
+            <p>Memory is divided into fixed-size partitions at system startup. Each process is allocated to a partition if it fits.</p>
+
+            <!-- Example Guide Box -->
+            <div class="example-box">
+                <div class="example-header">
+                    <span>🧪</span>
+                    <strong>Try This Example — See External Fragmentation</strong>
+                </div>
+                <div class="example-steps">
+                    <div class="example-step">
+                        <div class="step-num">Step 1</div>
+                        <div class="step-body">
+                            Set <strong>Total Memory = 1050 bytes</strong> and <strong>Block Size = 200 bytes</strong>, then click <em>Initialize Memory</em>.
+                            <div class="step-note">⚠️ 1050 ÷ 200 = 5 blocks (1000 bytes used) → <span class="highlight-red">50 bytes become External Fragmentation</span> — that leftover tail cannot form a full block and is <strong>permanently wasted</strong>.</div>
+                        </div>
+                    </div>
+                    <div class="example-step">
+                        <div class="step-num">Step 2</div>
+                        <div class="step-body">
+                            Add a process of <strong>150 bytes</strong>. It fits inside a 200-byte block.
+                            <div class="step-note">🟠 The remaining 50 bytes inside that block become <strong>Internal Fragmentation</strong> — allocated to the block but unused by the process.</div>
+                        </div>
+                    </div>
+                    <div class="example-step">
+                        <div class="step-num">Step 3</div>
+                        <div class="step-body">
+                            Keep adding more processes of <strong>150 bytes</strong> each until all 5 blocks are full.
+                            <div class="step-note">📊 Final result: <span class="highlight-red">50B External Frag</span> (end of memory, permanently lost) + <span class="highlight-orange">250B Internal Frag</span> (5 × 50B wasted inside each block).</div>
+                        </div>
+                    </div>
+                </div>
+                <button class="apply-example-btn" onclick="applyMFTExample()">⚡ Auto-fill These Values</button>
+            </div>
+
+            <div class="form-group">
+                <label for="mft-memory-size">Total Memory Size (bytes):</label>
+                <input type="number" id="mft-memory-size" min="1" value="1000">
+            </div>
+            
+            <div class="form-group">
+                <label for="mft-block-size">Block Size (bytes):</label>
+                <input type="number" id="mft-block-size" min="1" value="200">
+            </div>
+            
+            <div class="button-group">
+                <button id="mft-create-memory">Initialize Memory</button>
+                <button id="mft-reset" disabled>Reset</button>
+            </div>
+            
+            <div id="mft-memory-display" class="memory-container"></div>
+            
+            <div id="mft-initialization-info" class="info-panel" style="display: none;">
+                <h3>Memory Initialization</h3>
+                <p>Total Memory: <span id="mft-total-memory"></span> bytes</p>
+                <p>Block Size: <span id="mft-display-block-size"></span> bytes</p>
+                <p>Number of Blocks: <span id="mft-num-blocks"></span></p>
+                <p>External Fragmentation: <span id="mft-external-frag"></span> bytes</p>
+            </div>
+            
+            <div id="mft-process-controls" style="display: none;">
+                <h3>Add Process</h3>
+                <div class="form-group">
+                    <label for="mft-process-size">Process Size (bytes):</label>
+                    <input type="number" id="mft-process-size" min="1" value="150">
+                </div>
+                <button id="mft-add-process">Add Process</button>
+                <div id="mft-process-message"></div>
+            </div>
+            
+            <div id="mft-allocation-info" style="display: none;">
+                <h3>Allocation Information</h3>
+                <table id="mft-allocation-table">
+                    <thead>
+                        <tr>
+                            <th>Process</th>
+                            <th>Memory Required (bytes)</th>
+                            <th>Allocated</th>
+                            <th>Internal Fragmentation (bytes)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mft-allocation-tbody"></tbody>
+                </table>
+                
+                <div class="info-panel">
+                    <p>Total Internal Fragmentation: <span id="mft-total-internal-frag">0</span> bytes</p>
+                    <p>Total External Fragmentation: <span id="mft-final-external-frag">0</span> bytes</p>
+                    <p>Total Memory Allocated: <span id="mft-total-allocated">0</span> bytes</p>
+                </div>
+            </div>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #1a7a3c, #27ae60); border-radius:4px;"></div>
+                    <span>Occupied (Process)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #1c5b8a, #2980b9); border-radius:4px;"></div>
+                    <span>Free Block</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #b35900, #e67e22); border-radius:4px;"></div>
+                    <span>Internal Fragmentation</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #8b0000, #c0392b); border-radius:4px;"></div>
+                    <span>External Fragmentation</span>
+                </div>
+            </div>
+            
+            <div class="pros-cons">
+                <div class="pros-section">
+                    <h3>Advantages</h3>
+                    <ul>
+                        <li>Simple to implement and manage</li>
+                        <li>Predictable memory usage patterns</li>
+                        <li>Fast allocation due to fixed partition sizes</li>
+                        <li>No compaction needed</li>
+                    </ul>
+                </div>
+                
+                <div class="cons-section">
+                    <h3>Disadvantages</h3>
+                    <ul>
+                        <li>Wasted memory due to internal fragmentation</li>
+                        <li>Limits process size to partition size</li>
+                        <li>Inflexible for varying process sizes</li>
+                        <li>Poor memory utilization when processes don't match partition sizes</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MVT Tab Content -->
+        <div id="mvt-tab" class="tab-content">
+            <h2>Variable Partitioning (MVT)</h2>
+            <p>Memory is allocated dynamically based on process needs without fixed partitions.</p>
+
+            <!-- Example Guide Box -->
+            <div class="example-box">
+                <div class="example-header">
+                    <span>🧪</span>
+                    <strong>Try This Example — See External Fragmentation</strong>
+                </div>
+                <div class="example-steps">
+                    <div class="example-step">
+                        <div class="step-num">Step 1</div>
+                        <div class="step-body">
+                            Set <strong>Total Memory = 1000 bytes</strong>, then click <em>Initialize Memory</em>.
+                            <div class="step-note">You start with one big free block of 1000 bytes.</div>
+                        </div>
+                    </div>
+                    <div class="example-step">
+                        <div class="step-num">Step 2</div>
+                        <div class="step-body">
+                            Add 4 processes: <strong>P1 = 200B</strong>, <strong>P2 = 300B</strong>, <strong>P3 = 200B</strong>, <strong>P4 = 200B</strong>.
+                            <div class="step-note">Memory is now: [P1:200][P2:300][P3:200][P4:200] → only 100B free at end.</div>
+                        </div>
+                    </div>
+                    <div class="example-step">
+                        <div class="step-num">Step 3</div>
+                        <div class="step-body">
+                            Click <strong>✕ Remove</strong> on <strong>P1</strong> and <strong>P3</strong> inside the memory diagram.
+                            <div class="step-note">🔴 Now you have 3 free holes: 200B + 200B + 100B = 500B total free, but each hole is separate — <strong>External Fragmentation!</strong></div>
+                        </div>
+                    </div>
+                    <div class="example-step">
+                        <div class="step-num">Step 4</div>
+                        <div class="step-body">
+                            Try adding a new process of <strong>250 bytes</strong>.
+                            <div class="step-note">❌ Fails! Total free = 500B but largest contiguous block = 200B. The error message will explain the external fragmentation clearly.</div>
+                        </div>
+                    </div>
+                </div>
+                <button class="apply-example-btn" onclick="applyMVTExample()">⚡ Auto-fill These Values</button>
+            </div>
+            
+            <div class="form-group">
+                <label for="mvt-memory-size">Total Memory Size (bytes):</label>
+                <input type="number" id="mvt-memory-size" min="1" value="1000">
+            </div>
+            
+            <div class="button-group">
+                <button id="mvt-create-memory">Initialize Memory</button>
+                <button id="mvt-reset" disabled>Reset</button>
+            </div>
+            
+            <div id="mvt-memory-display" class="memory-container"></div>
+            
+            <div id="mvt-initialization-info" class="info-panel" style="display: none;">
+                <h3>Memory Initialization</h3>
+                <p>Total Memory: <span id="mvt-total-memory"></span> bytes</p>
+                <p>Available Memory: <span id="mvt-available-memory"></span> bytes</p>
+            </div>
+            
+            <div id="mvt-process-controls" style="display: none;">
+                <h3>Add Process</h3>
+                <div class="form-group">
+                    <label for="mvt-process-size">Process Size (bytes):</label>
+                    <input type="number" id="mvt-process-size" min="1" value="250">
+                </div>
+                <button id="mvt-add-process">Add Process</button>
+                <div id="mvt-process-message"></div>
+            </div>
+            
+            <div id="mvt-allocation-info" style="display: none;">
+                <h3>Allocation Information</h3>
+                <table id="mvt-allocation-table">
+                    <thead>
+                        <tr>
+                            <th>Process</th>
+                            <th>Memory Allocated (bytes)</th>
+                            <th>Allocated</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mvt-allocation-tbody"></tbody>
+                </table>
+                
+                <div class="info-panel">
+                    <p>Total Memory Available: <span id="mvt-total-memory-info">0</span> bytes</p>
+                    <p>Total Memory Allocated: <span id="mvt-total-allocated">0</span> bytes</p>
+                    <p>Total External Fragmentation: <span id="mvt-external-frag">0</span> bytes</p>
+                </div>
+            </div>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #1a7a3c, #27ae60); border-radius:4px;"></div>
+                    <span>Occupied (Process)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #1c5b8a, #2980b9); border-radius:4px;"></div>
+                    <span>Free Memory</span>
+                </div>
+            </div>
+            
+            <div class="pros-cons">
+                <div class="pros-section">
+                    <h3>Advantages</h3>
+                    <ul>
+                        <li>No internal fragmentation</li>
+                        <li>More efficient memory utilization</li>
+                        <li>Flexible for varying process sizes</li>
+                        <li>Processes can be allocated exact memory needed</li>
+                    </ul>
+                </div>
+                
+                <div class="cons-section">
+                    <h3>Disadvantages</h3>
+                    <ul>
+                        <li>External fragmentation can occur</li>
+                        <li>More complex implementation</li>
+                        <li>Slower allocation than fixed partitioning</li>
+                        <li>Requires compaction to reduce fragmentation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Comparison Tab Content -->
+        <div id="comparison-tab" class="tab-content">
+            <h2>MFT vs MVT Comparison</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>MFT (Fixed Partitioning)</th>
+                        <th>MVT (Variable Partitioning)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Partition Size</strong></td>
+                        <td>Fixed size partitions</td>
+                        <td>No fixed partitions - dynamic allocation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fragmentation</strong></td>
+                        <td>Internal fragmentation (within partitions)</td>
+                        <td>External fragmentation (between allocations)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Memory Utilization</strong></td>
+                        <td>Potentially lower due to internal fragmentation</td>
+                        <td>Generally higher as it allocates exact needed size</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Implementation</strong></td>
+                        <td>Simple</td>
+                        <td>More complex</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Process Size</strong></td>
+                        <td>Limited to partition size</td>
+                        <td>Limited only by available memory</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Flexibility</strong></td>
+                        <td>Low (fixed partitions)</td>
+                        <td>High (dynamic allocation)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Compaction Needed</strong></td>
+                        <td>No</td>
+                        <td>Yes (to reduce external fragmentation)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Allocation Speed</strong></td>
+                        <td>Fast (predefined partitions)</td>
+                        <td>Slower (must find suitable space)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="explanation">
+                <h3>When to Use Each Approach</h3>
+                <p><strong>MFT is better when:</strong></p>
+                <ul>
+                    <li>System has predictable memory requirements</li>
+                    <li>Process sizes are relatively uniform</li>
+                    <li>Simplicity is more important than perfect memory utilization</li>
+                    <li>Real-time systems where predictability is critical</li>
+                </ul>
+                
+                <hr class="approach-divider">
+
+                <p><strong>MVT is better when:</strong></p>
+                <ul>
+                    <li>Process sizes vary significantly</li>
+                    <li>Memory utilization needs to be maximized</li>
+                    <li>The system can handle dynamic allocation complexity</li>
+                    <li>Processes may need to grow during execution</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Deadlock Detection</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+  :root {
+    /* Dark Theme Palette */
+    --side-bg: #0f172a;
+    --main-bg: #0b0f1a;
+    --accent: #38bdf8;
+    --accent-glow: rgba(56, 189, 248, 0.15);
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --card-bg: #1e293b;
+    --border-color: #334155;
+    --input-bg: #0f172a;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, sans-serif;
+    background-color: var(--main-bg);
+    color: var(--text-main);
+    line-height: 1.6;
+    padding: 20px;
+    text-align: center;
+  }
+
+  /* Back Navigation */
+  .osx-nav {
+    max-width: 800px;
+    margin: 0 auto 20px auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .osx-nav-back, .osx-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+  }
+
+  .osx-nav-back:hover {
+    color: var(--accent);
+  }
+
+  h1 {
+    color: var(--text-main);
+    font-size: 2rem;
+    margin-bottom: 30px;
+    font-weight: 800;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+  }
+
+  input[type="text"] {
+    width: 300px;
+    max-width: 100%;
+    padding: 12px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    text-align: center;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+
+  input[type="text"]:focus {
+    border-color: var(--accent);
+  }
+
+  .tables {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 25px;
+    margin: 20px 0;
+  }
+
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    min-width: 300px;
+    border-radius: 15px;
+    overflow: hidden;
+  }
+
+  th, td {
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px;
+    color: var(--text-main);
+  }
+
+  th {
+    background-color: rgba(255, 255, 255, 0.05);
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  caption {
+    padding: 12px;
+    font-weight: bold;
+    color: var(--text-main);
+    font-size: 1.1rem;
+  }
+
+  input[type="number"] {
+    width: 60px;
+    padding: 8px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--accent);
+    text-align: center;
+    border-radius: 6px;
+    font-weight: bold;
+    outline: none;
+  }
+
+  input[type="number"]:focus {
+    border-color: var(--accent);
+  }
+
+  .button {
+    padding: 14px 30px;
+    background-color: var(--accent);
+    color: #0f172a !important; /* Force dark text on light button */
+    border: none;
+    font-weight: 700;
+    margin-top: 30px;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .button:hover {
+    background-color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px var(--accent-glow);
+  }
+
+  .output {
+    margin-top: 30px;
+    padding: 20px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 12px;
+    font-size: 1.1rem;
+  }
+
+  .success {
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.1);
+    border: 1px solid #4ade80;
+    padding: 15px;
+    border-radius: 10px;
+  }
+
+  .error {
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.1);
+    border: 1px solid #f87171;
+    padding: 15px;
+    border-radius: 10px;
+  }
+</style>
+</head>
+<body>
+  <div class="osx-nav">
+    <a href="../index.html" class="osx-nav-back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to OSLabX
+    </a>
+    <a href="../index.html" class="osx-brand">
+      <span class="osx-brand-dot"></span> OSLabX
+    </a>
+  </div>
+
+  <h1>Deadlock Detection</h1>
+
+  <div>
+    <label for="available">Available Resources (space-separated):</label>
+    <input type="text" id="available" placeholder="e.g. 3 2 2">
+  </div>
+
+  <div class="tables">
+    <table id="allocTable">
+      <caption>Allocated Resources</caption>
+      <thead>
+        <tr>
+          <th>Process</th>
+          <th>R0</th>
+          <th>R1</th>
+          <th>R2</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>P0</td><td><input type="number" min="0" value="0"></td><td><input type="number" min="0" value="0"></td><td><input type="number" min="0" value="0"></td></tr>
+        <tr><td>P1</td><td><input type="number" min="0" value="0"></td><td><input type="number" min="0" value="0"></td><td><input type="number" min="0" value="0"></td></tr>
+        <tr><td>P2</td><td><input type="number" min="0" value="0"></td><td><input type="number" min="0" value="0"></td><td><input type="number" min="0" value="0"></td></tr>
+        <tr><td>P3</td><td><input type="number" min="0" value="0"></td><td><input type="number" min="0" value="0"></td><td><input type="number" min="0" value="0"></td></tr>
+        <tr><td>P4</td><td><input type="number" min="0" value="0"></td><td><input type="number" min="0" value="0"></td><td><input type="number" min="0" value="0"></td></tr>
+      </tbody>
+    </table>
+
+    <table id="requestTable">
+      <caption>Requested Resources</caption>
+      <thead>
+        <tr>
+          <th>Process</th>
+          <th>R0</th>
+          <th>R1</th>
+          <th>R2</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>P0</td><td><input type="number" min="0" value="0"></td><td><input type="number" min="0" value="0"></td><td><input type="number" min="0" value="0"></td></tr>
+        <tr><td>P1</td><td><input type="number" min="0" value="0"></td><td><input type="number" min="0" value="0"></td><td><input type="number" min="0" value="0"></td></tr>
+        <tr><td>P2</td><td><input type="number" min="0" value="0"></td><td><input type="number" min="0" value="0"></td><td><input type="number" min="0" value="0"></td></tr>
+        <tr><td>P3</td><td><input type="number" min="0" value="0"></td><td><input type="number" min="0" value="0"></td><td><input type="number" min="0" value="0"></td></tr>
+        <tr><td>P4</td><td><input type="number" min="0" value="0"></td><td><input type="number" min="0" value="0"></td><td><input type="number" min="0" value="0"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <button class="button" onclick="detectDeadlock()">Check for Deadlock</button>
+
+  <div class="output" id="output"></div>
+
+  <script>
+    function detectDeadlock() {
+      const output = document.getElementById("output");
+      output.innerHTML = "";
+
+      const available = document.getElementById("available").value.trim().split(/\s+/).map(Number);
+      const allocRows = document.querySelectorAll("#allocTable tbody tr");
+      const requestRows = document.querySelectorAll("#requestTable tbody tr");
+
+      const alloc = Array.from(allocRows, row =>
+        Array.from(row.querySelectorAll("input"), input => Number(input.value) || 0)
+      );
+      const request = Array.from(requestRows, row =>
+        Array.from(row.querySelectorAll("input"), input => Number(input.value) || 0)
+      );
+
+      const n = alloc.length;
+      const m = available.length;
+      const completed = Array(n).fill(false);
+      let done = 0;
+      let safeSequence = [];
+
+      let changed = true;
+      while (changed) {
+        changed = false;
+        for (let i = 0; i < n; i++) {
+          if (!completed[i]) {
+            let canProceed = true;
+            for (let j = 0; j < m; j++) {
+              if (request[i][j] > available[j]) {
+                canProceed = false;
+                break;
+              }
+            }
+            if (canProceed) {
+              for (let j = 0; j < m; j++) {
+                available[j] += alloc[i][j];
+              }
+              completed[i] = true;
+              safeSequence.push(`P${i}`);
+              changed = true;
+              done++;
+            }
+          }
+        }
+      }
+
+      if (done === n) {
+        output.innerHTML = `<div class="success">✅ No Deadlock Detected.<br>Safe Sequence: ${safeSequence.join(" → ")}</div>`;
+      } else {
+        const deadlocked = completed.map((c, i) => !c ? `P${i}` : null).filter(Boolean);
+        output.innerHTML = `<div class="error">❌ Deadlock Detected!<br>Deadlocked Processes: ${deadlocked.join(", ")}</div>`;
+      }
+    }
+  </script>
+
+</body>
+</html>

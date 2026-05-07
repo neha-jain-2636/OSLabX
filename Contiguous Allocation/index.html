@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="../global.css" />
+
+  <link rel="stylesheet" href="style.css" />
+
+  <title>Module 09 — Contiguous Memory Allocation</title>
+</head>
+<body>
+  <div class="osx-nav">
+    <a href="../index.html" class="osx-nav-back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to OSLabX
+    </a>
+    <a href="../index.html" class="osx-brand">
+      <span class="osx-brand-dot"></span> OSLabX
+    </a>
+  </div>
+
+  <div class="module-wrapper">
+
+    <div class="module-header">
+      <div class="module-icon">📦</div>
+      <div class="module-title">
+        <h1>Module 09 — Contiguous Memory Allocation</h1>
+        <p class="text-muted">Compare Best-Fit, Next-Fit, and Worst-Fit allocation strategies with memory fragmentation analysis.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Simulation Parameters</h3>
+      <hr class="divider" />
+
+      <div class="input-group">
+        <label for="totalMemory">Total Memory Size (KB)</label>
+        <input
+          type="number"
+          id="totalMemory"
+          class="input-field"
+          placeholder="e.g. 1024"
+          value="1024"
+          min="256"
+          max="4096"
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="strategy">Allocation Strategy</label>
+        <select id="strategy" class="input-field">
+          <option value="best-fit">Best Fit (Lab Algorithm)</option>
+          <option value="next-fit">Next Fit (Lab Algorithm)</option>
+          <option value="worst-fit">Worst Fit (New Algorithm)</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label for="processes">Process Allocation Requests (Format: "name:size" space-separated)</label>
+        <input
+          type="text"
+          id="processes"
+          class="input-field"
+          placeholder="e.g. P1:300 P2:200 P3:150 P4:250"
+        />
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="runSimulation()">
+          ▶ Run Simulation
+        </button>
+        <button class="btn btn-secondary" onclick="resetAll()">
+          ↺ Reset
+        </button>
+      </div>
+
+      <div id="error-msg" class="alert alert-error hidden"></div>
+    </div>
+
+    <div id="visual-output">
+      <div class="output-placeholder">
+        <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M9 17v-2m3 2v-4m3 4v-6M3 21h18M3 10l9-7 9 7" />
+        </svg>
+        <p>Results will appear here after you run the simulation.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

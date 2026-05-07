@@ -1,0 +1,141 @@
+/* Disk Scheduling — module overrides on top of global.css */
+
+.module-wrapper { position: relative; z-index: 2; }
+
+/* Header tweak */
+.ds-header-content { gap: 18px; }
+.module-icon-spin { animation-duration: 18s; }
+
+/* Canvas wrap */
+.ds-canvas-wrap {
+  background: var(--bg-elev-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  margin-top: 12px;
+  overflow-x: auto;
+}
+#seekCanvas, .ds-canvas {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  background: var(--bg);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.ds-track-ruler {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* Legend */
+.ds-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: var(--bg-elev-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+.ds-legend-item { display: inline-flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--text-secondary); }
+.ds-legend-dot { width: 12px; height: 12px; border-radius: 4px; background: var(--text-muted); }
+.ds-legend-dot.current { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+.ds-legend-dot.done { background: var(--success); }
+.ds-legend-dot.pending { background: var(--text-muted); border: 1px dashed var(--border-strong); }
+
+/* Request badges */
+.ds-req-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.ds-req-badge {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-elev-2);
+  color: var(--text-secondary);
+}
+.ds-req-badge.pending { color: var(--text-muted); }
+.ds-req-badge.current {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #0b0d12;
+  border-color: transparent;
+}
+.ds-req-badge.done { background: var(--success-light); color: var(--success); border-color: rgba(74,222,128,0.3); }
+
+/* Sim section */
+.ds-sim-section { margin-top: 16px; }
+.ds-sim-heading {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.ds-sim-label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* Stat boxes */
+.stat-box {
+  flex: 1;
+  min-width: 130px;
+  padding: 14px 16px;
+  background: linear-gradient(180deg, var(--bg-elev-1), var(--bg-elev-2));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  text-align: left;
+}
+.stat-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Bottom row */
+.ds-bottom-row { gap: 16px; }
+
+/* Run / reset specific */
+.ds-run-btn { padding: 12px 22px; font-size: 0.9rem; }
+.ds-reset-btn { padding: 12px 18px; }
+.ds-sm-btn { padding: 6px 12px; font-size: 0.78rem; }
+
+/* Speed slider */
+.ds-speed-group { padding: 10px 0 6px; }
+
+/* Footer link spacing */
+.ds-footer-link { margin: 0 4px; }
+
+/* Step highlight */
+.step-highlight {
+  background: var(--accent-dim) !important;
+  outline: 1px solid var(--accent);
+}
+
+/* Popup panel */
+.ds-popup-panel { padding: 14px 0; }
+.ds-popup-panel-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  font-size: 0.92rem;
+}

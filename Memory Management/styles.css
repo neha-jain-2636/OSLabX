@@ -1,0 +1,92 @@
+/* Memory Management — module overrides */
+
+.container { position: relative; z-index: 2; }
+.container > h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2rem);
+  text-align: center;
+  margin: 18px 0 24px;
+  background: linear-gradient(120deg, var(--accent), var(--violet));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tabs { margin-bottom: 24px; justify-content: center; }
+
+/* Memory blocks */
+.memory-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 18px;
+  min-height: 80px;
+  background: var(--bg-elev-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+.memory-block {
+  flex: 1 1 auto;
+  min-height: 56px;
+  min-width: 80px;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 1px solid var(--border-md);
+  transition: var(--transition);
+  position: relative;
+}
+.memory-block.free-block,
+.free-block {
+  background: var(--bg-input);
+  color: var(--text-muted);
+  border-style: dashed;
+}
+.memory-block.process-block,
+.process-block {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #0b0d12;
+  border-color: transparent;
+  box-shadow: 0 4px 14px -6px var(--accent-glow);
+}
+.memory-block.internal-frag {
+  background: rgba(251,191,36,0.18);
+  color: var(--amber);
+  border-color: rgba(251,191,36,0.35);
+}
+.memory-block.external-frag {
+  background: rgba(248,113,113,0.16);
+  color: var(--error);
+  border-color: rgba(248,113,113,0.35);
+}
+
+/* Legend */
+.legend-color {
+  width: 14px; height: 14px;
+  border-radius: 4px;
+  border: 1px solid var(--border-md);
+}
+
+/* Comparison table tweaks */
+.comparison-table th { color: var(--accent); }
+.comparison-table td:first-child { color: var(--text-primary); font-weight: 600; }
+
+/* Example boxes */
+.example-box { padding: 18px 20px; }
+.example-header { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 600; }
+.apply-example-btn { margin-top: 12px; }
+
+.button-group { margin-top: 14px; }
+
+/* Pros / cons */
+.pros-section ul, .cons-section ul { padding-left: 20px; margin-top: 6px; }
+.pros-section li { color: var(--text-secondary); margin: 3px 0; }
+.cons-section li { color: var(--text-secondary); margin: 3px 0; }
+
+/* Tab content fade already in global */

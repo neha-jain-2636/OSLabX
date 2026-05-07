@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../global.css" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .explanation-container {
+      max-width: 900px;
+      margin: 40px auto;
+    }
+
+    .explanation-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 20px;
+      line-height: 1.7;
+    }
+
+    .explanation-section h2 {
+      color: var(--accent);
+      font-size: 1.4rem;
+      margin-bottom: 12px;
+      border-bottom: 2px solid var(--border-accent);
+      padding-bottom: 10px;
+    }
+
+    .explanation-section h3 {
+      color: var(--text-1);
+      font-size: 1.1rem;
+      margin-top: 16px;
+      margin-bottom: 8px;
+    }
+
+    .explanation-section p {
+      color: var(--text-1);
+      margin-bottom: 12px;
+    }
+
+    .explanation-section ul, .explanation-section ol {
+      margin-left: 20px;
+      margin-bottom: 12px;
+    }
+
+    .explanation-section li {
+      margin-bottom: 8px;
+      color: var(--text-1);
+    }
+
+    .code-block {
+      background: var(--bg);
+      border-left: 4px solid var(--accent);
+      padding: 14px;
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: 12px;
+      overflow-x: auto;
+      margin: 12px 0;
+      color: var(--accent);
+      line-height: 1.5;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 13px;
+    }
+
+    .comparison-table th, .comparison-table td {
+      padding: 12px;
+      border: 1px solid var(--border);
+      text-align: left;
+    }
+
+    .comparison-table th {
+      background: var(--bg);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .comparison-table td {
+      color: var(--text-1);
+    }
+
+    .highlight-box {
+      background: var(--green-dim);
+      border-left: 4px solid var(--green);
+      padding: 14px;
+      border-radius: 4px;
+      margin: 12px 0;
+      color: var(--text-1);
+    }
+
+    .warning-box {
+      background: var(--amber-dim);
+      border-left: 4px solid var(--amber);
+      padding: 14px;
+      border-radius: 4px;
+      margin: 12px 0;
+      color: var(--text-1);
+    }
+
+    .example-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 14px;
+      border-radius: 4px;
+      margin: 12px 0;
+      color: var(--text-1);
+    }
+
+    .acl-table-example {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    .acl-table-example th, .acl-table-example td {
+      padding: 8px;
+      border: 1px solid var(--border);
+      text-align: left;
+    }
+
+    .acl-table-example th {
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .perm-r { color: var(--accent); }
+    .perm-w { color: var(--amber); }
+    .perm-x { color: var(--green); }
+    .perm-none { color: var(--red); }
+
+    .nav-button {
+      display: inline-block;
+      padding: 10px 16px;
+      background: var(--accent);
+      color: #000;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 13px;
+      transition: all var(--dur) var(--ease);
+      margin-top: 20px;
+    }
+
+    .nav-button:hover {
+      background: #9ab8ff;
+      transform: translateY(-2px);
+    }
+  </style>
+  <title>ACL - Educational Guide</title>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <div class="osx-nav">
+    <a href="../index.html" class="osx-nav-back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to OSLabX
+    </a>
+    <a href="../index.html" class="osx-brand">
+      <span class="osx-brand-dot"></span> OSLabX
+    </a>
+  </div>
+
+  <div class="app">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo">
+          <svg viewBox="0 0 32 32" fill="none" class="logo-svg">
+            <path d="M6 8h20M6 16h20M6 24h20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="2" cy="8" r="1.5" fill="currentColor"/>
+            <circle cx="2" cy="16" r="1.5" fill="currentColor"/>
+            <circle cx="2" cy="24" r="1.5" fill="currentColor"/>
+          </svg>
+        </div>
+        <div>
+          <div class="header-tag">OS Mini Project · File Systems</div>
+          <h1 class="header-title">Access Control List (ACL) - Educational Guide</h1>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle theme">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
+            <path d="M10 2v2M10 16v2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M2 10h2M16 10h2M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42"/>
+            <circle cx="10" cy="10" r="4"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="main" style="display: block;">
+
+      <div class="explanation-container">
+
+        <!-- What is ACL Section -->
+        <div class="explanation-section">
+          <h2>🔐 What is Access Control List (ACL)?</h2>
+          
+          <p>An <strong>Access Control List (ACL)</strong> is a security mechanism used in file systems to control which users or groups can access specific files or directories and what operations they can perform on them.</p>
+
+          <p>ACL provides fine-grained permission management by maintaining explicit lists of permissions for each resource (file or directory). Each entry in an ACL specifies:</p>
+
+          <ul>
+            <li><strong>User/Group:</strong> Who is requesting access</li>
+            <li><strong>Resource:</strong> Which file or directory is being accessed</li>
+            <li><strong>Permissions:</strong> What operations are allowed (Read, Write, Execute)</li>
+          </ul>
+
+          <div class="highlight-box">
+            <strong>💡 Key Concept:</strong> Instead of just having "owner," "group," and "others" with fixed permissions, ACL allows you to define custom permissions for any number of users or groups for each file independently.
+          </div>
+        </div>
+
+        <!-- Traditional Permissions Section -->
+        <div class="explanation-section">
+          <h2>📋 Traditional File Permissions vs. ACL</h2>
+
+          <h3>Traditional Permission Model (Unix/Linux)</h3>
+          <p>Traditional permissions use a simple 3-tier model:</p>
+          <ul>
+            <li><strong>Owner (User):</strong> The person who owns the file</li>
+            <li><strong>Group:</strong> Members of a specific group</li>
+            <li><strong>Others:</strong> Everyone else</li>
+          </ul>
+
+          <p>Each tier gets three permissions (Read, Write, Execute), represented as 'rwx' (e.g., 755 = rwxr-xr-x)</p>
+
+          <div class="code-block">
+Example: -rwxr-xr-x
+├─ Owner: rwx (7)
+├─ Group: r-x (5)
+└─ Others: r-x (5)</div>
+
+          <h3>Limitations of Traditional Permissions:</h3>
+          <ul>
+            <li>Can't grant Read access to user A and Write access to user B on the same file</li>
+            <li>Limited to owner, group, and others categories</li>
+            <li>If a user is in a group, they inherit all group permissions</li>
+            <li>Can't apply different permissions to specific users</li>
+          </ul>
+
+          <h3>ACL Model</h3>
+          <p>ACL allows multiple explicit entries per resource, each with custom permissions.</p>
+
+          <div class="code-block">
+File: report.txt
+─────────────────
+user: alice   → r--
+user: bob     → rw-
+user: charlie → r-x
+user: guest   → ---
+group: admin  → rwx</div>
+
+          <h3>Comparison Table:</h3>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Aspect</th>
+                <th>Traditional Permissions</th>
+                <th>ACL</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Granularity</td>
+                <td>3 levels (owner, group, others)</td>
+                <td>Per-user or per-group entries</td>
+              </tr>
+              <tr>
+                <td>Flexibility</td>
+                <td>Limited</td>
+                <td>Very flexible</td>
+              </tr>
+              <tr>
+                <td>Default Permissions</td>
+                <td>Same for all users in group</td>
+                <td>Custom per user</td>
+              </tr>
+              <tr>
+                <td>Complexity</td>
+                <td>Simple to understand</td>
+                <td>More complex</td>
+              </tr>
+              <tr>
+                <td>Scalability</td>
+                <td>Poor (limited levels)</td>
+                <td>Excellent (unlimited entries)</td>
+              </tr>
+              <tr>
+                <td>Inheritance</td>
+                <td>Automatic</td>
+                <td>Can be configured</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Benefits Section -->
+        <div class="explanation-section">
+          <h2>✨ Benefits of ACL in Modern File Systems</h2>
+
+          <h3>1. Fine-Grained Access Control</h3>
+          <p>Grant different permissions to different users without affecting others. For example, allow Alice to read a file, Bob to read and write, and Charlie to execute it.</p>
+
+          <div class="example-box">
+            <strong>Example:</strong> Project document
+            <table class="acl-table-example">
+              <tr>
+                <th>User</th>
+                <th>Permissions</th>
+                <th>Purpose</th>
+              </tr>
+              <tr>
+                <td>alice (Owner)</td>
+                <td><span class="perm-r">r</span><span class="perm-w">w</span><span class="perm-x">x</span></td>
+                <td>Full control</td>
+              </tr>
+              <tr>
+                <td>bob (Editor)</td>
+                <td><span class="perm-r">r</span><span class="perm-w">w</span><span class="perm-none">-</span></td>
+                <td>Can edit</td>
+              </tr>
+              <tr>
+                <td>charlie (Reviewer)</td>
+                <td><span class="perm-r">r</span><span class="perm-none">-</span><span class="perm-none">-</span></td>
+                <td>Can only read</td>
+              </tr>
+            </table>
+          </div>
+
+          <h3>2. Easier Multi-User Collaboration</h3>
+          <p>In organizations with many users, ACL simplifies permission management by allowing different permission sets for each user without creating complex group hierarchies.</p>
+
+          <h3>3. Better Security</h3>
+          <ul>
+            <li>Principle of least privilege: Users get only the permissions they need</li>
+            <li>Deny access to unauthorized users explicitly</li>
+            <li>Audit trail can track who accessed what</li>
+          </ul>
+
+          <h3>4. Inheritance and Default Permissions</h3>
+          <p>Files created inside a directory can inherit parent directory ACL entries by default, ensuring consistent security policies.</p>
+
+          <h3>5. Support for Groups and Roles</h3>
+          <p>ACL can handle both individual users and groups, allowing role-based access control.</p>
+
+          <div class="highlight-box">
+            <strong>💡 Example:</strong> Instead of listing 50 individual users, you can have one ACL entry for "qa_team" group with appropriate permissions.
+          </div>
+
+          <h3>6. Dynamic Permission Changes</h3>
+          <p>Permissions can be updated in real-time without affecting other users or requiring system restart.</p>
+
+          <h3>7. Cross-Platform Compatibility</h3>
+          <p>Modern file systems (NTFS, ext4 with ACL extensions, etc.) support ACLs, making it easier to migrate between systems while maintaining security policies.</p>
+        </div>
+
+        <!-- Permission Types Section -->
+        <div class="explanation-section">
+          <h2>🔑 Permission Types</h2>
+
+          <h3>Three Basic Permission Types:</h3>
+
+          <h3>1. Read (r) - Bit 4</h3>
+          <ul>
+            <li><strong>For Files:</strong> Permission to view the file's contents</li>
+            <li><strong>For Directories:</strong> Permission to list directory contents</li>
+            <li>Required before any other operations</li>
+          </ul>
+
+          <h3>2. Write (w) - Bit 2</h3>
+          <ul>
+            <li><strong>For Files:</strong> Permission to modify or delete the file</li>
+            <li><strong>For Directories:</strong> Permission to create, delete, or modify files within it</li>
+            <li>Implies ability to change file properties</li>
+          </ul>
+
+          <h3>3. Execute (x) - Bit 1</h3>
+          <ul>
+            <li><strong>For Files:</strong> Permission to run the file as a program/script</li>
+            <li><strong>For Directories:</strong> Permission to enter/traverse the directory</li>
+            <li>For directories, execute is necessary to access files within it</li>
+          </ul>
+
+          <div class="warning-box">
+            <strong>⚠️ Important:</strong> For directories, 'execute' permission is needed to traverse into it. If a directory lacks 'x' permission, users cannot access files within it even if they have 'r' permission.
+          </div>
+
+          <h3>Permission Representation:</h3>
+          <div class="code-block">
+rwx = 111 (binary) = 7 (decimal) = Full permissions
+rw- = 110 (binary) = 6 (decimal) = Read + Write
+r-x = 101 (binary) = 5 (decimal) = Read + Execute
+r-- = 100 (binary) = 4 (decimal) = Read only
+-w- = 010 (binary) = 2 (decimal) = Write only
+--x = 001 (binary) = 1 (decimal) = Execute only
+--- = 000 (binary) = 0 (decimal) = No permissions</div>
+        </div>
+
+        <!-- Implementation Details Section -->
+        <div class="explanation-section">
+          <h2>⚙️ ACL Implementation in This System</h2>
+
+          <h3>Features Implemented:</h3>
+          <ul>
+            <li><strong>User Management:</strong> Create and manage users</li>
+            <li><strong>File Management:</strong> Create files with specified owners</li>
+            <li><strong>Permission Assignment:</strong> Grant rwx permissions to users per file</li>
+            <li><strong>Access Control:</strong> Verify permissions before operations</li>
+            <li><strong>Inheritance:</strong> Owner gets full rwx by default</li>
+            <li><strong>Audit Logging:</strong> Track all operations</li>
+            <li><strong>Permission Testing:</strong> Test if a user can perform an action</li>
+          </ul>
+
+          <h3>ACL Entry Structure:</h3>
+          <div class="code-block">
+{
+  userId: "user-alice",
+  resourceId: "file-report.txt",
+  resourceType: "file",
+  permissions: "rwx",
+  createdAt: "2024-01-15T10:30:00Z"
+}</div>
+
+          <h3>Access Check Algorithm:</h3>
+          <ol>
+            <li>Check if the user is the file owner
+              <ul><li>If yes → Grant full access (rwx)</li></ul>
+            </li>
+            <li>Search for ACL entry matching (user, file)
+              <ul><li>If not found → Deny access</li></ul>
+            </li>
+            <li>Extract permission bits for requested action
+              <ul><li>If bit is set → Grant access</li>
+              <li>If bit is not set → Deny access</li></ul>
+            </li>
+          </ol>
+
+          <h3>Ownership and Default Permissions:</h3>
+          <ul>
+            <li>File creator becomes the owner</li>
+            <li>Owner automatically receives 'rwx' permissions</li>
+            <li>Only owner or admin can modify ACL entries</li>
+            <li>Cannot remove permissions from the owner</li>
+          </ul>
+        </div>
+
+        <!-- Real-World Examples Section -->
+        <div class="explanation-section">
+          <h2>🌐 Real-World Examples</h2>
+
+          <h3>Example 1: Project Collaboration</h3>
+          <div class="example-box">
+            <strong>Scenario:</strong> Development team working on a project
+            <div class="code-block">
+File: project-code.py
+Owner: alice (Lead Developer)
+
+ACL Entries:
+─────────────────────────
+alice    → rwx  (Full control)
+bob      → rw-  (Can read & edit)
+charlie  → r--  (Can read only)
+guest    → ---  (No access)</div>
+          </div>
+
+          <h3>Example 2: Directory-Based Sharing</h3>
+          <div class="example-box">
+            <strong>Scenario:</strong> Department document management
+            <div class="code-block">
+Directory: /finance/reports/
+
+ACL Entries:
+─────────────────────────
+finance_dept    → rwx  (All team members)
+external_audit  → r--  (Read-only access)
+boss            → rwx  (Full access)
+intern          → ---  (No access)</div>
+          </div>
+
+          <h3>Example 3: Security-Sensitive Files</h3>
+          <div class="example-box">
+            <strong>Scenario:</strong> Configuration files needing protection
+            <div class="code-block">
+File: database-config.env
+Owner: sysadmin
+
+ACL Entries:
+─────────────────────────
+sysadmin         → rwx  (Owner)
+app_service      → r--  (Read credentials)
+developers       → ---  (No access)
+auditors         → r--  (Read for compliance)</div>
+          </div>
+        </div>
+
+        <!-- Best Practices Section -->
+        <div class="explanation-section">
+          <h2>🎯 Best Practices for ACL Management</h2>
+
+          <h3>1. Principle of Least Privilege</h3>
+          <p>Grant users only the minimum permissions they need to do their job. If someone only needs to read a file, don't grant write or execute permissions.</p>
+
+          <h3>2. Use Groups Effectively</h3>
+          <p>Instead of adding permissions for each individual user, create groups and assign permissions to groups when possible.</p>
+
+          <h3>3. Regular Audits</h3>
+          <p>Review ACL entries periodically to ensure they're still appropriate, especially for former employees or changed roles.</p>
+
+          <h3>4. Document Permissions</h3>
+          <p>Maintain documentation about why certain permissions were granted to specific users.</p>
+
+          <h3>5. Permission Inheritance</h3>
+          <p>Use directory-level ACLs to establish consistent permission policies for new files created within.</p>
+
+          <h3>6. Avoid Excessive Permissions</h3>
+          <p>Be cautious with execute permissions; they should be granted deliberately, not by default.</p>
+
+          <h3>7. Protect ACL-Modified Objects</h3>
+          <p>Regular backups should include ACL information to prevent accidental loss of permission configuration.</p>
+        </div>
+
+        <!-- Navigation -->
+        <div style="text-align: center; margin-top: 40px;">
+          <a href="acl.html" class="nav-button">→ Go to ACL Manager</a>
+          <br><br>
+          <a href="../index.html" class="nav-button" style="background: var(--bg-card); color: var(--text-1); border: 1px solid var(--border);">← Back to Modules</a>
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    }
+  </script>
+
+</body>
+</html>

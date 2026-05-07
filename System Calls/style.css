@@ -1,0 +1,325 @@
+:root {
+    --main-bg: #0b0f1a;
+    --side-bg: #0f172a;
+    --card-bg: #1e293b;
+    --accent: #38bdf8;
+    --accent-glow: rgba(56, 189, 248, 0.15);
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+    --input-bg: #0f172a;
+    --success: #4ade80;
+    --danger: #f87171;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background-color: var(--main-bg);
+    color: var(--text-main);
+    padding: 20px;
+    line-height: 1.6;
+}
+
+/* Header */
+.header {
+    background: linear-gradient(135deg, var(--side-bg), #1e293b);
+    padding: 30px;
+    margin-bottom: 30px;
+    text-align: center;
+    border-radius: 15px;
+    border: 1px solid var(--border-color);
+}
+
+.header h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; }
+.header p { color: var(--text-muted); margin-top: 5px; }
+
+/* Layout Grid */
+.modules-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+/* Card Styling */
+.module-card {
+    background-color: var(--card-bg);
+    padding: 25px;
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.module-card h2 {
+    color: var(--text-main);
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-left: 4px solid var(--accent);
+    padding-left: 15px;
+}
+
+/* Navigation Buttons */
+.nav-group {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.nav-btn, .file-nav-btn {
+    background: var(--side-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.nav-btn.active, .file-nav-btn.active {
+    background: var(--accent);
+    color: var(--side-bg);
+    border-color: var(--accent);
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+/* Info Panel */
+.info-panel {
+    background-color: var(--input-bg);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 20px;
+}
+
+.info-content h3 { font-size: 1rem; color: var(--accent); margin-bottom: 5px; }
+.info-content p { font-size: 0.9rem; color: var(--text-muted); }
+
+pre {
+    background: #00000040;
+    padding: 12px;
+    border-radius: 6px;
+    margin-top: 10px;
+    overflow-x: auto;
+}
+
+code { color: var(--success); font-family: 'Fira Code', monospace; font-size: 0.85rem; }
+
+/* Interactive Areas */
+.visualization-panel {
+    background: var(--side-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px;
+    min-height: 350px;
+}
+
+.btn-action {
+    background-color: var(--accent);
+    color: var(--side-bg);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 800;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    transition: 0.2s;
+}
+
+.btn-action:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+/* Form Elements */
+input[type="text"], textarea, select {
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--accent);
+    padding: 10px;
+    border-radius: 8px;
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+/* Terminal & Process Styles */
+.terminal {
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.terminal-header {
+    background: #334155;
+    padding: 5px 12px;
+    font-size: 0.75rem;
+    color: #cbd5e1;
+}
+
+.terminal-body { padding: 15px; }
+
+.process-tree { padding: 10px; }
+.children {
+    margin-left: 20px;
+    border-left: 2px solid var(--border-color);
+    padding-left: 15px;
+    margin-top: 10px;
+}
+
+/* FD Table */
+.fd-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.fd-table th { text-align: left; padding: 10px; color: var(--accent); border-bottom: 2px solid var(--border-color); }
+.fd-table td { padding: 10px; border-bottom: 1px solid var(--border-color); }
+
+.demo, .file-demo { display: none; }
+.demo.active, .file-demo.active { display: block; }
+
+/* Styling for the Process Tree Buttons (The Nodes) */
+.process {
+    margin-left: 20px;
+    border-left: 2px dashed var(--border-color);
+    padding-left: 15px;
+    margin-top: 10px;
+}
+
+.process-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.process-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.process-btn:hover {
+    background: #3b82f6; /* A slightly lighter blue */
+    transform: scale(1.05);
+}
+
+/* Status Labels (Running, Terminated) */
+.process-status {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+.process-status.running {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.process-status.terminated {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Styling for the Process Selection Buttons (Exec/Wait/Exit Demos) */
+.process-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+}
+
+.process-select-btn {
+    background: white;
+    border: 1px solid var(--border-color);
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.process-select-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.process-select-btn.selected {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+/* Table styling for the FD Table */
+.files-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+.files-table th, .files-table td {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.close-file-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.close-file-btn:hover {
+    background: #dc2626;
+}
+
+.osx-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0 22px;
+  margin-bottom: 6px;
+}
+.osx-nav-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--border-md);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  background: var(--bg-elev-1);
+  transition: var(--transition);
+}
+.osx-nav-back:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  transform: translateX(-2px);
+}
+
+@media (max-width: 1000px) {
+    .modules-container { grid-template-columns: 1fr; }
+}

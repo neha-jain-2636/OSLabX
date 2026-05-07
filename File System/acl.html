@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../global.css" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="acl.css" />
+  <title>File System ACL Manager</title>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <div class="osx-nav">
+    <a href="../index.html" class="osx-nav-back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to OSLabX
+    </a>
+    <a href="../index.html" class="osx-brand">
+      <span class="osx-brand-dot"></span> OSLabX
+    </a>
+  </div>
+
+  <div class="app">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo">
+          <svg viewBox="0 0 32 32" fill="none" class="logo-svg">
+            <path d="M6 8h20M6 16h20M6 24h20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="2" cy="8" r="1.5" fill="currentColor"/>
+            <circle cx="2" cy="16" r="1.5" fill="currentColor"/>
+            <circle cx="2" cy="24" r="1.5" fill="currentColor"/>
+          </svg>
+        </div>
+        <div>
+          <div class="header-tag">OS Mini Project · File Systems</div>
+          <h1 class="header-title">Access Control List (ACL) Manager</h1>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="pill" id="validation-pill"><span class="pill-dot"></span><span id="validation-text">Ready</span></div>
+        <button class="icon-btn" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle theme">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
+            <path d="M10 2v2M10 16v2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M2 10h2M16 10h2M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42"/>
+            <circle cx="10" cy="10" r="4"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Status Banner -->
+    <div id="error-msg" class="status-banner hidden" role="alert" aria-live="assertive"></div>
+
+    <!-- Main -->
+    <main class="main">
+
+      <!-- Left: Controls -->
+      <aside class="sidebar">
+
+        <!-- System Setup -->
+        <section class="card">
+          <div class="card-label"><span class="step-num">01</span> System Setup</div>
+          <div class="input-row">
+            <div class="input-wrap">
+              <span class="input-prefix">👤</span>
+              <input type="text" id="user-name-input" class="field" placeholder="username" autocomplete="off" />
+            </div>
+            <button class="add-btn" onclick="createUser()">Add User</button>
+          </div>
+          <div id="users-list" class="chip-list empty-state-inline">No users created yet.</div>
+        </section>
+
+        <!-- Create Files -->
+        <section class="card">
+          <div class="card-label"><span class="step-num">02</span> Files</div>
+          <div class="input-row">
+            <div class="input-wrap">
+              <span class="input-prefix">📄</span>
+              <input type="text" id="file-name-input" class="field" placeholder="filename.txt" autocomplete="off" />
+            </div>
+          </div>
+          <div class="select-block">
+            <label class="select-label">Owner</label>
+            <select id="file-owner-select" class="field"></select>
+          </div>
+          <button class="add-btn add-btn-full" onclick="createFile()">Create File</button>
+          <div id="files-list" class="chip-list empty-state-inline">No files created yet.</div>
+        </section>
+
+        <!-- Permissions -->
+        <section class="card">
+          <div class="card-label"><span class="step-num">03</span> Permissions</div>
+          <div class="select-block">
+            <label class="select-label">File/Directory</label>
+            <select id="permission-file-select" class="field"></select>
+          </div>
+          <div class="select-block">
+            <label class="select-label">User</label>
+            <select id="permission-user-select" class="field"></select>
+          </div>
+          <div class="permission-checkboxes">
+            <label class="checkbox-wrapper">
+              <input type="checkbox" id="perm-read" />
+              <span class="checkbox-label">Read (r)</span>
+            </label>
+            <label class="checkbox-wrapper">
+              <input type="checkbox" id="perm-write" />
+              <span class="checkbox-label">Write (w)</span>
+            </label>
+            <label class="checkbox-wrapper">
+              <input type="checkbox" id="perm-exec" />
+              <span class="checkbox-label">Execute (x)</span>
+            </label>
+          </div>
+          <button class="add-btn add-btn-full" onclick="assignPermissions()">Assign Permissions</button>
+        </section>
+
+        <!-- Demo -->
+        <section class="card">
+          <div class="card-label">Quick Presets</div>
+          <div class="preset-grid">
+            <button class="preset-btn" onclick="loadDemoData()">Load Demo</button>
+            <button class="preset-btn preset-warn" onclick="resetAllACL()">Reset All</button>
+          </div>
+        </section>
+
+        <!-- Actions -->
+        <section class="action-bar">
+          <button class="run-btn" onclick="generateReport()">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path d="M3 4h14v2H3V4zm0 5h14v2H3V9zm0 5h14v2H3v-2z"/></svg>
+            Generate Report
+          </button>
+          <button class="ghost-btn" onclick="exportACLData()">Export JSON</button>
+        </section>
+
+      </aside>
+
+      <!-- Right: Content -->
+      <div class="content">
+
+        <!-- Info Card -->
+        <div class="top-content">
+          <div class="status-card" id="live-status-card">
+            <span class="status-tag">ACL System</span>
+            <h4 class="status-title">Ready to manage access</h4>
+            <p class="status-desc">Create users, files, and assign permissions with Read (r), Write (w), and Execute (x) rights. Permissions are checked on all file operations.</p>
+          </div>
+        </div>
+
+        <!-- File Browser -->
+        <div class="section-group">
+          <div class="section-header">
+            <h3 class="section-title">📁 File Browser</h3>
+            <span class="section-count" id="file-count">0 files</span>
+          </div>
+          <div id="file-browser" class="file-browser">
+            <div class="empty-state">
+              <div class="empty-icon">📭</div>
+              <p>No files created yet. Create a file to begin.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACL Table -->
+        <div class="section-group">
+          <div class="section-header">
+            <h3 class="section-title">🔐 ACL Table</h3>
+            <span class="section-count" id="acl-count">0 entries</span>
+          </div>
+          <div id="acl-table" class="acl-table-wrapper">
+            <div class="empty-state">
+              <div class="empty-icon">🔒</div>
+              <p>No ACL entries. Assign permissions to users to populate this table.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Access Test -->
+        <div class="section-group">
+          <div class="section-header">
+            <h3 class="section-title">🧪 Access Test</h3>
+          </div>
+          <div class="test-controls">
+            <div class="test-row">
+              <select id="test-user-select" class="field"></select>
+              <span class="test-arrow">→</span>
+              <select id="test-file-select" class="field"></select>
+              <select id="test-action-select" class="field">
+                <option value="read">Read</option>
+                <option value="write">Write</option>
+                <option value="exec">Execute</option>
+              </select>
+              <button class="test-btn" onclick="testAccess()">Test</button>
+            </div>
+            <div id="test-result" class="test-result hidden"></div>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <script src="acl.js"></script>
+  <script>
+    // Theme toggle
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../global.css" />
+  <link rel="stylesheet" href="style.css" />
+  <title>File Allocation Strategies</title>
+</head>
+<body>
+
+  <div class="osx-nav">
+    <a href="../index.html" class="osx-nav-back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to OSLabX
+    </a>
+    <a href="../index.html" class="osx-brand">
+      <span class="osx-brand-dot"></span> OSLabX
+    </a>
+  </div>
+  
+<div class="module-wrapper">
+
+  <!-- HEADER -->
+  <div class="module-header">
+    <div class="module-icon">📁</div>
+    <div class="module-title">
+      <h1>File Allocation Strategies</h1>
+      <p class="text-muted">Allocate multiple files on a shared disk using Sequential, Indexed, or Linked strategies. Deallocate any file individually.</p>
+    </div>
+  </div>
+
+  <!-- DISK CONFIG -->
+  <div class="card" id="disk-config-card">
+    <h3>Disk Configuration</h3>
+    <p class="text-muted" style="font-size:0.85rem;margin-top:4px;margin-bottom:16px;">
+      Set total disk size and block size. These lock after the first file is allocated.
+    </p>
+    <hr class="divider" />
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <div class="input-group" style="flex:1;min-width:140px;">
+        <label for="cfg-total">Total Disk Blocks</label>
+        <input type="number" id="cfg-total" class="input-field" value="25" min="4" max="64" />
+      </div>
+      <div class="input-group" style="flex:1;min-width:140px;">
+        <label for="cfg-blocksize">Block Size (bytes)</label>
+        <input type="number" id="cfg-blocksize" class="input-field" value="50" min="1" />
+      </div>
+    </div>
+    <button class="btn btn-secondary" onclick="applyDiskConfig()" id="cfg-btn">✔ Apply &amp; Initialize Disk</button>
+  </div>
+
+  <!-- DISK VISUALIZER -->
+  <div class="card" id="disk-visual-card" style="display:none;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+      <h3 style="margin:0;">Disk Block Map</h3>
+      <div id="disk-legend" class="disk-legend"></div>
+    </div>
+    <div id="disk-stats-row" class="stats-row" style="margin-bottom:16px;"></div>
+    <div class="disk-grid" id="disk-grid"></div>
+  </div>
+
+  <!-- ALLOCATE NEW FILE -->
+  <div class="card" id="alloc-card" style="display:none;">
+    <h3>➕ Allocate a New File</h3>
+    <hr class="divider" />
+
+    <div class="algo-tabs">
+      <button class="algo-tab active" onclick="switchAlgo('sequential', this)">Sequential</button>
+      <button class="algo-tab" onclick="switchAlgo('indexed', this)">Indexed</button>
+      <button class="algo-tab" onclick="switchAlgo('linked', this)">Linked</button>
+    </div>
+
+    <p id="algo-desc" class="algo-hint">
+      Finds the first contiguous free region. Simple but can cause external fragmentation.
+    </p>
+
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <div class="input-group" style="flex:1;min-width:140px;">
+        <label for="file-name">File Name / ID</label>
+        <input type="text" id="file-name" class="input-field" placeholder="e.g. file_A" />
+      </div>
+      <div class="input-group" style="flex:1;min-width:140px;">
+        <label for="file-size">File Size (bytes)</label>
+        <input type="number" id="file-size" class="input-field" placeholder="e.g. 120" />
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="allocateFile()">➕ Allocate File</button>
+      <button class="btn btn-danger" onclick="confirmResetDisk()">🗑️ Reset Entire Disk</button>
+    </div>
+    <div id="error-msg"   class="alert alert-error   hidden" style="margin-top:12px;"></div>
+    <div id="success-msg" class="alert alert-success hidden" style="margin-top:12px;"></div>
+  </div>
+
+  <!-- FAT + per-file detail -->
+  <div id="visual-output">
+    <div class="output-placeholder">
+      <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+          d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+      </svg>
+      <p>Initialize the disk above, then allocate files to see the File Allocation Table here.</p>
+    </div>
+  </div>
+
+</div>
+<script src="script.js"></script>
+</body>
+</html>

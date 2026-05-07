@@ -1,0 +1,169 @@
+/* Page Replacement — module overrides */
+
+.module-wrapper { position: relative; z-index: 2; }
+
+.belady-panel {
+  background: var(--bg-elev-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  margin: 14px 0;
+}
+
+/* Stat boxes */
+.stat-box {
+  flex: 1;
+  min-width: 130px;
+  padding: 14px 16px;
+  background: linear-gradient(180deg, var(--bg-elev-1), var(--bg-elev-2));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+.stat-label { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+.stat-value { font-family: var(--font-mono); font-size: 1.3rem; font-weight: 700; color: var(--accent); }
+.stat-value.hit { color: var(--success); }
+.stat-value.miss { color: var(--error); }
+
+.output-section-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  margin: 18px 0 10px;
+}
+
+.ref-string-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  padding: 12px 14px;
+  background: var(--bg-elev-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+.ref-string-display > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px; height: 30px;
+  border-radius: 6px;
+  background: var(--bg-input);
+  color: var(--text-secondary);
+}
+
+/* Step table */
+.step-table-wrapper {
+  overflow-x: auto;
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+.step-table {
+  border-radius: 0;
+  border: none;
+  margin-top: 0;
+}
+.step-table td, .step-table th {
+  text-align: center;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+.cell-fault {
+  background: rgba(248,113,113,0.12);
+  color: var(--error);
+  font-weight: 600;
+}
+.cell-hit {
+  background: rgba(74,222,128,0.10);
+  color: var(--success);
+  font-weight: 600;
+}
+
+/* Frequency table */
+.freq-table {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.freq-chip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 14px;
+  background: var(--bg-elev-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  min-width: 56px;
+}
+.freq-page { font-family: var(--font-mono); font-weight: 700; color: var(--accent); }
+.freq-count { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+
+/* Belady chart */
+.belady-chart {
+  margin-top: 12px;
+  padding: 16px;
+  background: var(--bg-elev-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+.belady-bar-row {
+  display: grid;
+  grid-template-columns: 70px 1fr 50px;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0;
+}
+.belady-bar-label { font-family: var(--font-mono); font-size: 0.82rem; color: var(--text-secondary); }
+.belady-bar-track {
+  height: 14px;
+  background: var(--bg-input);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.belady-bar-track > div {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--violet));
+  transition: width 0.6s ease;
+}
+.belady-bar-track.anomaly > div {
+  background: linear-gradient(90deg, var(--amber), var(--error));
+}
+.belady-anomaly-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: var(--warning-light);
+  color: var(--amber);
+  border: 1px solid rgba(251,191,36,0.3);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.belady-ok-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: var(--success-light);
+  color: var(--success);
+  border: 1px solid rgba(74,222,128,0.3);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+/* PR legend */
+.pr-legend {
+  display: flex; flex-wrap: wrap; gap: 14px;
+  margin-top: 10px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+.pr-legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.pr-legend-dot {
+  width: 14px; height: 14px; border-radius: 4px;
+  border: 1px solid var(--border-md);
+}
